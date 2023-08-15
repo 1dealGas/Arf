@@ -24,7 +24,7 @@ Product Features:
    
    -- Changes of 〈Fumen〉.gd will be synchronized to the viewer automatically.
 
-5. **Click the button "ExportButton" to get the final *.ar file**.
+5. Click the button **"ExportButton"** to get the final *.ar file.
 
 ## Credit
 
