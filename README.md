@@ -16,15 +16,15 @@ Product Features:
 
 1. Download the whole Project, Import it into your Godot Editor(v4.2 dev3 or above) and **Edit** it.
 
-2. Open 〈Arf〉.tscn, change "**Stream**" property of the Root Node "Arf".
+2. Open `〈Arf〉.tscn`, change "**Stream**" property of the Root Node "Arf".
 
-3. Write your chart in the function body of **〈Fumen〉.gd**.
+3. Write your chart in the function body of `〈Fumen〉.gd`.
 
 4. Run Arf **in debug mode** to view your work.
    
-   -- Changes of 〈Fumen〉.gd will be synchronized to the viewer automatically.
+   -- Changes of `〈Fumen〉.gd` will be synchronized to the viewer automatically.
 
-5. Click the button **"ExportButton"** to get the final *.ar file.
+5. Click the button **"ExportButton"** to get the final `*.ar` file.
 
 ## Credit
 
