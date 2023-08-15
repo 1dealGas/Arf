@@ -1,0 +1,19 @@
+[gd_scene load_steps=2 format=3 uid="uid://bka8jurkpa1to"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bqlgr"]
+bg_color = Color(1, 1, 1, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+corner_detail = 5
+
+[node name="hint" type="Panel"]
+custom_minimum_size = Vector2(185, 185)
+offset_left = -92.5
+offset_top = -92.5
+offset_right = 92.5
+offset_bottom = 92.5
+rotation = 0.785398
+pivot_offset = Vector2(92.5, 92.5)
+theme_override_styles/panel = SubResource("StyleBoxFlat_bqlgr")

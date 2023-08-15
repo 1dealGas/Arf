@@ -1,0 +1,40 @@
+; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
+
+config_version=5
+
+[application]
+
+config/name="Arf"
+run/main_scene="res://〈Arf〉.tscn"
+config/features=PackedStringArray("4.2", "GL Compatibility")
+run/low_processor_mode=true
+boot_splash/show_image=false
+boot_splash/fullsize=false
+boot_splash/use_filter=false
+config/icon="res://include/wish.png"
+
+[debug]
+
+gdscript/warnings/static_called_on_instance=2
+
+[display]
+
+window/size/viewport_width=1800
+window/size/viewport_height=1080
+window/energy_saving/keep_screen_on=false
+window/stretch/mode="canvas_items"
+
+[physics]
+
+common/physics_ticks_per_second=8
+
+[rendering]
+
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"
