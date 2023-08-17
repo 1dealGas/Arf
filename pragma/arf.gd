@@ -183,6 +183,86 @@ class WishGroup:
 			for i in range(1,number_of_times+1):
 				Arf.Wish.append(self._duplicate(_dz).move(i*dx,i*dy,i*dbt,trim))
 		return self
+	func r(at:float,radius:float=6,degree:float=90) -> WishGroup:
+		var nodenum := nodes.size()
+		if nodenum<2: return self
+		assert(at>=0, notnegative%"Bartime" )
+		var _at0:float = at - 0.0625*radius
+		if _at0<0:
+			_at0 = 0
+			radius = at
+		var _x0:float = 0
+		var _y0:float = 0
+		var _x1:float = 0
+		var _y1:float = 0
+		var has_at0 := false
+		var has_at := false
+		degree = fmod(degree, 360.0)
+		if _at0<=nodes[0].bartime:
+			_x0 = nodes[0].x
+			_y0 = nodes[0].y
+			has_at0 = true
+		elif _at0>=nodes[-1].bartime:
+			_x0 = nodes[-1].x
+			_y0 = nodes[-1].y
+			has_at0 = true
+		else:
+			for i in range(0,nodenum-1):
+				if _at0>=nodes[i].bartime and _at0<nodes[i+1].bartime:
+					var _x := nodes[i].x
+					var _y := nodes[i].y
+					var _t := nodes[i].easetype
+					var dx := nodes[i+1].x - _x
+					var dy := nodes[i+1].y - _y
+					var interpolate_ratio := (_at0-nodes[i].bartime)/(nodes[i+1].bartime-nodes[i].bartime)
+					if _t == 0:
+						_x0 = _x + dx*interpolate_ratio
+						_y0 = _y + dy*interpolate_ratio
+						has_at0 = true
+					else:
+						_x0 = _x + dx*Arf.EASE(interpolate_ratio,_t)
+						_y0 = _y + dy*Arf.EASE(interpolate_ratio,_t)
+						has_at0 = true
+		if at<=nodes[0].bartime:
+			_x1 = nodes[0].x
+			_y1 = nodes[0].y
+			has_at = true
+		elif at>=nodes[-1].bartime:
+			_x1 = nodes[-1].x
+			_y1 = nodes[-1].y
+			has_at = true
+		else:
+			for i in range(0,nodenum-1):
+				if at>=nodes[i].bartime and at<nodes[i+1].bartime:
+					var _x := nodes[i].x
+					var _y := nodes[i].y
+					var _t := nodes[i].easetype
+					var dx := nodes[i+1].x - _x
+					var dy := nodes[i+1].y - _y
+					var interpolate_ratio := (at-nodes[i].bartime)/(nodes[i+1].bartime-nodes[i].bartime)
+					if _t == 0:
+						_x1 = _x + dx*interpolate_ratio
+						_y1 = _y + dy*interpolate_ratio
+						has_at = true
+					else:
+						_x1 = _x + dx*Arf.EASE(interpolate_ratio,_t)
+						_y1 = _y + dy*Arf.EASE(interpolate_ratio,_t)
+						has_at = true
+		assert(has_at0 and has_at, "Failed to Insert a to-be-received Wish.")
+		if is_equal_approx(degree,0):
+			_x0 += radius
+		elif is_equal_approx(degree,90):
+			_y0 += radius
+		elif is_equal_approx(degree,180):
+			_x0 -= radius
+		elif is_equal_approx(degree,270):
+			_y0 -= radius
+		else:
+			degree = degree/180 * PI
+			_x0 += radius*cos( degree )
+			_y0 += radius*sin( degree )
+		return Arf._w(_x0,_y0,_at0,0,0.05).n(_x1,_y1,at).h(at)
+		
 	
 	func _duplicate(dz:float=0) -> WishGroup:
 		var ng := Arf.WishGroup.new()
@@ -306,7 +386,10 @@ func YDelta(arr:Array[CamNode]) -> void:
 	assert(arr.size()>0, add_camnodes)
 	arr.sort_custom(CamNodeSorter)
 	Z[current_zindex-1].YDelta = arr
+
 func w(x:float,y:float,bartime:float,easetype:int=0,zdelta:float=0) -> WishGroup:
+	return Arf._w(x,y,bartime,easetype,zdelta)
+static func _w(x:float,y:float,bartime:float,easetype:int=0,zdelta:float=0) -> WishGroup:
 	assert(zdelta>=0 and zdelta<1, "Current ZIndex Overrided")
 	var _nw:=WishGroup.new()
 	_nw.zindex = current_zindex + zdelta
@@ -376,3 +459,14 @@ func layerid(id:int) -> LayerResult:
 
 # Fumen Stuff (Pattern Part)
 # Commonly, use w(),n(),h() only.
+const DUAL_SCALE := 1.51
+const DUAL_TYPE := 33
+func dual(x:float,y:float,bartime:float,radius:float=3,degree:float=90,delta_degree:float=180) -> void:
+	var _t0:float = bartime-radius*DUAL_SCALE
+	if _t0<0:
+		_t0 = 0
+		radius = bartime/DUAL_SCALE
+	degree = degree/180.0*PI
+	delta_degree = degree + delta_degree/180.0*PI
+	Arf._w(x+radius*cos(degree),y+radius*sin(degree),bartime-(radius*DUAL_SCALE)*0.0625,DUAL_TYPE).n(x,y,bartime).h(bartime)
+	Arf._w(x+radius*cos(delta_degree),y+radius*sin(delta_degree),bartime-(radius*DUAL_SCALE)*0.0625,DUAL_TYPE,0.05).n(x,y,bartime)

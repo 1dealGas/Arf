@@ -31,8 +31,8 @@ func reload() -> void:
 
 # A Wrapper of seek()
 func _seek(prg:float) -> void:
-	stop()
-	play(prg/1000.0)
+	stream_paused = false
+	seek(prg/1000.0)
 	stream_paused = true
 
 # Init
@@ -66,9 +66,18 @@ func _process(_delta:float) -> void:
 		$Tempo.text = BTSTR % tempot
 
 # Input
+const SCROLL_SCALE:float = 23.7
 func _unhandled_input(event:InputEvent) -> void:
 	if stream == null or not(stream_paused): return
-	if event.is_action_pressed(su500):
+	if event is InputEventPanGesture:
+		current_progress = clampi(current_progress+event.delta.y*SCROLL_SCALE,0,audio_length)
+		_seek(current_progress)
+		ArView.update(current_progress)
+		timet[0] = current_progress
+		tempot[0] = Arfc.get_bartime(current_progress)
+		$Time.text = TIMESTR % timet
+		$Tempo.text = BTSTR % tempot
+	elif event.is_action_pressed(su500):
 		current_progress = clampi(current_progress+500,0,audio_length)
 		_seek(current_progress)
 		ArView.update(current_progress)
