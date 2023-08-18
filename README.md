@@ -16,7 +16,7 @@ Product Features:
 
 1. Download the whole Project, Import it into your Godot Editor(v4.2 dev3 or above) and **Edit** it.
 
-2. Open `〈Arf〉.tscn`, change "**Stream**" property of the Root Node "Arf" (or just add `〈Audio〉.ogg`) into your Project).
+2. Open `〈Arf〉.tscn`, change "**Stream**" property of the Root Node "Arf" (or just add `〈Audio〉.ogg` into your Project).
 
 3. Write your chart in the function body of `〈Fumen〉.gd`.
 
