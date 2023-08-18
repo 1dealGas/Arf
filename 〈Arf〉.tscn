@@ -151,7 +151,7 @@ horizontal_alignment = 2
 
 [node name="TempoLabel" type="Label" parent="."]
 z_index = 1000
-offset_left = 1717.0
+offset_left = 1712.0
 offset_top = 58.0
 offset_right = 1772.0
 offset_bottom = 84.0
@@ -270,6 +270,69 @@ alignment = 1
 context_menu_enabled = false
 select_all_on_focus = true
 caret_blink = true
+
+[node name="Hint1" type="Label" parent="."]
+offset_left = 1731.0
+offset_top = 814.5
+offset_right = 1791.0
+offset_bottom = 844.5
+text = "0"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="Hint2" type="Label" parent="."]
+offset_left = 1731.0
+offset_top = 702.0
+offset_right = 1791.0
+offset_bottom = 732.0
+text = "0.0625"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="Hint3" type="Label" parent="."]
+offset_left = 1731.0
+offset_top = 589.5
+offset_right = 1791.0
+offset_bottom = 619.5
+text = "0.125"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="Hint4" type="Label" parent="."]
+offset_left = 1731.0
+offset_top = 477.0
+offset_right = 1791.0
+offset_bottom = 507.0
+text = "0.1875"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="Hint5" type="Label" parent="."]
+offset_left = 1731.0
+offset_top = 364.5
+offset_right = 1791.0
+offset_bottom = 394.5
+text = "0.25"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="Hint6" type="Label" parent="."]
+offset_left = 1731.0
+offset_top = 252.0
+offset_right = 1791.0
+offset_bottom = 282.0
+text = "0.3125"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="Hint7" type="Label" parent="."]
+offset_left = 1731.0
+offset_top = 139.5
+offset_right = 1791.0
+offset_bottom = 169.5
+text = "0.375"
+horizontal_alignment = 2
+vertical_alignment = 1
 
 [connection signal="button_up" from="TimeButton" to="." method="_on_time_button_button_up"]
 [connection signal="button_up" from="TempoButton" to="." method="_on_tempo_button_button_up"]

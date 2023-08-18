@@ -2,6 +2,7 @@ extends AudioStreamPlayer
 const FMPATH := "res://〈Fumen〉.gd"
 const TIMESTR := "%d · %d"
 const BTSTR := "%s · %s"
+const _5 := "%.4f"
 const _arf := preload("res://pragma/arf.gd")  # to Avoid the bug of "_super_implicit_constructor()"
 const su50 := "scrollup_50ms"
 const sd50 := "scrolldown_50ms"
@@ -30,13 +31,29 @@ func reload() -> void:
 		$Tempo.text = BTSTR % tempot
 
 # A Wrapper of seek()
-func _seek(prg:float) -> void:
+func _seek(prgms:float,prg_unknown:bool=true) -> void:
 	stream_paused = false
-	seek(prg/1000.0)
+	seek(prgms/1000.0)
 	stream_paused = true
+	if prg_unknown:
+		var _t:float = Arfc.get_bartime(current_progress)
+		ArView.update(current_progress)
+		timet[0] = current_progress
+		tempot[0] = _t
+		$Time.text = TIMESTR % timet
+		$Tempo.text = BTSTR % tempot
+		$Hint1.text = _5 % (_t)
+		$Hint2.text = _5 % (_t+0.0625)
+		$Hint3.text = _5 % (_t+0.125)
+		$Hint4.text = _5 % (_t+0.1875)
+		$Hint5.text = _5 % (_t+0.25)
+		$Hint6.text = _5 % (_t+0.3125)
+		$Hint7.text = _5 % (_t+0.375)
 
 # Init
 func _enter_tree() -> void:
+	if stream==null:
+		stream = load("res://〈Audio〉.ogg")
 	if stream!= null:
 		audio_length = int(stream.get_length()*1000)
 		timet[1] = audio_length
@@ -55,60 +72,49 @@ func _physics_process(_delta:float) -> void:
 		print("\n〈fumen〉.gd Updated in %s" % Time.get_time_string_from_system())
 
 # Updater
+var last_progress:float = -1
 func _process(_delta:float) -> void:
 	if stream!=null and not stream_paused:
 		@warning_ignore("narrowing_conversion")
 		current_progress = (get_playback_position() + AudioServer.get_time_since_last_mix() - AudioServer.get_output_latency()) * 1000
-		ArView.update(current_progress)
-		timet[0] = current_progress
-		tempot[0] = Arfc.get_bartime(current_progress)
-		$Time.text = TIMESTR % timet
-		$Tempo.text = BTSTR % tempot
+		if current_progress > audio_length-100:
+			stream_paused = true
+			$PlayButton.button_pressed = false
+		if current_progress != last_progress:
+			var _t:float = Arfc.get_bartime(current_progress)
+			ArView.update(current_progress)
+			timet[0] = current_progress
+			tempot[0] = _t
+			$Time.text = TIMESTR % timet
+			$Tempo.text = BTSTR % tempot
+			$Hint1.text = _5 % (_t)
+			$Hint2.text = _5 % (_t+0.0625)
+			$Hint3.text = _5 % (_t+0.125)
+			$Hint4.text = _5 % (_t+0.1875)
+			$Hint5.text = _5 % (_t+0.25)
+			$Hint6.text = _5 % (_t+0.3125)
+			$Hint7.text = _5 % (_t+0.375)
+			last_progress = current_progress
 
 # Input
 const SCROLL_SCALE:float = 23.7
 func _unhandled_input(event:InputEvent) -> void:
 	if stream == null or not(stream_paused): return
 	if event is InputEventPanGesture:
-		current_progress = clampi(current_progress+event.delta.y*SCROLL_SCALE,0,audio_length)
+		current_progress = clampi(current_progress+event.delta.y*SCROLL_SCALE,0,audio_length-100)
 		_seek(current_progress)
-		ArView.update(current_progress)
-		timet[0] = current_progress
-		tempot[0] = Arfc.get_bartime(current_progress)
-		$Time.text = TIMESTR % timet
-		$Tempo.text = BTSTR % tempot
 	elif event.is_action_pressed(su500):
-		current_progress = clampi(current_progress+500,0,audio_length)
+		current_progress = clampi(current_progress+500,0,audio_length-100)
 		_seek(current_progress)
-		ArView.update(current_progress)
-		timet[0] = current_progress
-		tempot[0] = Arfc.get_bartime(current_progress)
-		$Time.text = TIMESTR % timet
-		$Tempo.text = BTSTR % tempot
 	elif event.is_action_pressed(sd500):
-		current_progress = clampi(current_progress-500,0,audio_length)
+		current_progress = clampi(current_progress-500,0,audio_length-100)
 		_seek(current_progress)
-		ArView.update(current_progress)
-		timet[0] = current_progress
-		tempot[0] = Arfc.get_bartime(current_progress)
-		$Time.text = TIMESTR % timet
-		$Tempo.text = BTSTR % tempot
 	elif event.is_action_pressed(su50):
-		current_progress = clampi(current_progress+50,0,audio_length)
+		current_progress = clampi(current_progress+50,0,audio_length-100)
 		_seek(current_progress)
-		ArView.update(current_progress)
-		timet[0] = current_progress
-		tempot[0] = Arfc.get_bartime(current_progress)
-		$Time.text = TIMESTR % timet
-		$Tempo.text = BTSTR % tempot
 	elif event.is_action_pressed(sd50):
-		current_progress = clampi(current_progress-50,0,audio_length)
+		current_progress = clampi(current_progress-50,0,audio_length-100)
 		_seek(current_progress)
-		ArView.update(current_progress)
-		timet[0] = current_progress
-		tempot[0] = Arfc.get_bartime(current_progress)
-		$Time.text = TIMESTR % timet
-		$Tempo.text = BTSTR % tempot
 	
 
 # Button
@@ -130,19 +136,13 @@ func _on_spd_button_button_up() -> void:
 		_05x = true
 func _on_time_button_button_up() -> void:
 	if stream!=null and stream_paused and $LineEdit.text.is_valid_float():
-		var prg := clampi(int($LineEdit.text.to_float()),0,audio_length)
-		_seek(prg)
-		ArView.update(prg)
-		timet[0] = prg
-		tempot[0] = Arfc.get_bartime(prg)
-		current_progress = prg
-		$Time.text = TIMESTR % timet
-		$Tempo.text = BTSTR % tempot
+		current_progress = clampi(int($LineEdit.text.to_float()),0,audio_length-100)
+		_seek(current_progress)
 func _on_tempo_button_button_up() -> void:
 	if stream!=null and stream_paused and $LineEdit.text.is_valid_float():
-		var prg := clampf($LineEdit.text.to_float(),0,audio_barl)
+		var prg := clampf($LineEdit.text.to_float(),0,audio_barl-0.125)
 		var prgms := Arfc.get_mstime(prg)
-		_seek(prgms)
+		_seek(prgms,false)
 		current_progress = prgms
 		ArView.update(prgms)
 		current_progress = prgms
@@ -150,3 +150,10 @@ func _on_tempo_button_button_up() -> void:
 		tempot[0] = prg
 		$Time.text = TIMESTR % timet
 		$Tempo.text = BTSTR % tempot
+		$Hint1.text = _5 % (prg)
+		$Hint2.text = _5 % (prg+0.0625)
+		$Hint3.text = _5 % (prg+0.125)
+		$Hint4.text = _5 % (prg+0.1875)
+		$Hint5.text = _5 % (prg+0.25)
+		$Hint6.text = _5 % (prg+0.3125)
+		$Hint7.text = _5 % (prg+0.375)

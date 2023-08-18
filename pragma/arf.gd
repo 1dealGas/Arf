@@ -193,6 +193,7 @@ class WishGroup:
 			radius = at
 		var _x0:float = 0
 		var _y0:float = 0
+		var _t0:int = 0
 		var _x1:float = 0
 		var _y1:float = 0
 		var has_at0 := false
@@ -201,10 +202,12 @@ class WishGroup:
 		if _at0<=nodes[0].bartime:
 			_x0 = nodes[0].x
 			_y0 = nodes[0].y
+			_t0 = nodes[0].easetype
 			has_at0 = true
 		elif _at0>=nodes[-1].bartime:
 			_x0 = nodes[-1].x
 			_y0 = nodes[-1].y
+			_t0 = nodes[-1].easetype
 			has_at0 = true
 		else:
 			for i in range(0,nodenum-1):
@@ -222,6 +225,7 @@ class WishGroup:
 					else:
 						_x0 = _x + dx*Arf.EASE(interpolate_ratio,_t)
 						_y0 = _y + dy*Arf.EASE(interpolate_ratio,_t)
+						_t0 = _t
 						has_at0 = true
 		if at<=nodes[0].bartime:
 			_x1 = nodes[0].x
@@ -261,7 +265,7 @@ class WishGroup:
 			degree = degree/180 * PI
 			_x0 += radius*cos( degree )
 			_y0 += radius*sin( degree )
-		return Arf._w(_x0,_y0,_at0,0,0.05).n(_x1,_y1,at).h(at)
+		return Arf._w(_x0,_y0,_at0,_t0,0.05).n(_x1,_y1,at).h(at)
 		
 	
 	func _duplicate(dz:float=0) -> WishGroup:
