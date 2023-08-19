@@ -303,7 +303,7 @@ static func compile() -> void: #ArfResult doesn't contain custom objects.
 			if i>2:
 				before = wgarray[i-1]
 				after = wgarray[i]
-				if after[0]==before[0] and after[1]==before[1]: before[3]=0
+				if abs(after[0]-before[0])<0.1 and abs(after[1]-before[1])<0.1: before[3]=0
 			
 			
 	if timemin>512:
