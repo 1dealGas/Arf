@@ -286,18 +286,26 @@ static func compile() -> void: #ArfResult doesn't contain custom objects.
 	ArfResult.Wish = _g
 	
 	# Compile Info(Init,End,Traits.Camera)
-	var timemin = 512000
-	var timemax = 0
+	var timemin:int = 512000
+	var timemax:int = 0
 	for harray in ArfResult.Hint:
 		#[x,y,mstime,zindex]
 		if harray[2]>timemax: timemax = harray[2]
 		if harray[2]<timemin: timemin = harray[2]
-	var wgtime = 0
+	var wgtime:int = 0
+	var before:Array = []
+	var after:Array = []
 	for wgarray in ArfResult.Wish:
 		for i in range(2,(wgarray as Array).size()-1):
 			wgtime = wgarray[i][2]
 			if wgtime>timemax: timemax = wgtime
 			if wgtime<timemin: timemin = wgtime
+			if i>2:
+				before = wgarray[i-1]
+				after = wgarray[i]
+				if after[0]==before[0] and after[1]==before[1]: before[3]=0
+			
+			
 	if timemin>512:
 		ArfResult.Info.Init = int(timemin) - 512
 	else:
