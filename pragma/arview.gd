@@ -238,7 +238,10 @@ static func ArCamera(nodes:Array=[], progress:int=-1, zindex:int=1) -> Array:
 	return []
 
 static func refresh(arfroot:Node):
+	
 	ArView.clear_ArView()
+	if not Arfc.compiled: return ArView
+	
 	var fm := Arfc.ArfResult.duplicate(true)
 	var traits:Dictionary = fm.Info.Traits
 	if "Camera" in traits:
@@ -323,6 +326,7 @@ static var last_hgo:int = -1
 static var current_interpolated := Vector4()
 static var current_wid := ""
 static func update(progress:int) -> void:
+	if not Arfc.compiled: return
 	if progress < Init or progress > End:
 		for go in Wgo: go.visible = false
 		for go in Hgo: go.visible = false

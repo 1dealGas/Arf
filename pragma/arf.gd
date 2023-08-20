@@ -28,7 +28,6 @@ const Positive := "%s must be a positive value."
 const notnegative := "%s must be a non-negative value."
 
 static var _prim_complete:bool = false
-static var LayerResults:Array[LayerResult]
 static var current_zindex:int = 1
 
 class SingleHint:
@@ -102,6 +101,7 @@ const pz := " in Z%d: "
 const pn := "No Node Included"
 class WishGroup:
 	
+	var _childhints:Array[SingleHint] = []
 	var wid:String
 	var nextdup:int = 1
 	
@@ -119,35 +119,55 @@ class WishGroup:
 	func h(Nbartime:float) -> WishGroup:
 		var nodenum := nodes.size()
 		assert(nodenum>1, req)
-		assert(Nbartime>nodes[0].bartime and Nbartime<=nodes[-1].bartime, wish_not_exist%Nbartime)
-		for i in range(0,nodenum-1):
-			if Nbartime>nodes[i].bartime and Nbartime<=nodes[i+1].bartime:
-				var x0 := nodes[i].x
-				var y0 := nodes[i].y
-				var dx := nodes[i+1].x - x0
-				var dy := nodes[i+1].y - y0
-				@warning_ignore("integer_division")
-				var ex := nodes[i].easetype/10
-				var ey := nodes[i].easetype%10
-				var interpolate_ratio := (Nbartime-nodes[i].bartime)/(nodes[i+1].bartime-nodes[i].bartime)
-				var nh:=SingleHint.new()
-				if ex==0 and ey==0:
-					nh.x = x0 + dx*interpolate_ratio
-					nh.y = y0 + dy*interpolate_ratio
-				else:
-					nh.x = x0 + dx*Arf.EASE(interpolate_ratio,ex)
-					nh.y = y0 + dy*Arf.EASE(interpolate_ratio,ey)
-				nh.bartime = Nbartime
-				nh.zindex = int(self.zindex)
-				Arf.Hint.append(nh)
-				break
-		return self
+		assert(Nbartime>=nodes[0].bartime and Nbartime<=nodes[-1].bartime, wish_not_exist%Nbartime)
+		if Nbartime == nodes[0].bartime:
+			var nh := SingleHint.new()
+			nh.x = nodes[0].x
+			nh.y = nodes[0].y
+			nh.bartime = nodes[0].bartime
+			nh.zindex = int(self.zindex)
+			self._childhints.append(nh)
+			Arf.Hint.append(nh)
+			return self
+		elif Nbartime == nodes[-1].bartime:
+			var nh := SingleHint.new()
+			nh.x = nodes[-1].x
+			nh.y = nodes[-1].y
+			nh.bartime = nodes[-1].bartime
+			nh.zindex = int(self.zindex)
+			self._childhints.append(nh)
+			Arf.Hint.append(nh)
+			return self
+		else:
+			for i in range(0,nodenum-1):
+				if Nbartime>nodes[i].bartime and Nbartime<=nodes[i+1].bartime:
+					var x0 := nodes[i].x
+					var y0 := nodes[i].y
+					var dx := nodes[i+1].x - x0
+					var dy := nodes[i+1].y - y0
+					@warning_ignore("integer_division")
+					var ex := nodes[i].easetype/10
+					var ey := nodes[i].easetype%10
+					var interpolate_ratio := (Nbartime-nodes[i].bartime)/(nodes[i+1].bartime-nodes[i].bartime)
+					var nh:=SingleHint.new()
+					if ex==0 and ey==0:
+						nh.x = x0 + dx*interpolate_ratio
+						nh.y = y0 + dy*interpolate_ratio
+					else:
+						nh.x = x0 + dx*Arf.EASE(interpolate_ratio,ex)
+						nh.y = y0 + dy*Arf.EASE(interpolate_ratio,ey)
+					nh.bartime = Nbartime
+					nh.zindex = int(self.zindex)
+					self._childhints.append(nh)
+					Arf.Hint.append(nh)
+					break
+			return self
 	func try_interpolate(Nbartime:float) -> WishGroup:
 		var nodenum := nodes.size()
 		if nodenum<2: return self
 		elif Nbartime<=nodes[0].bartime or Nbartime>nodes[-1].bartime: return self
 		else:
-			for i in range(0,nodenum-1):
+			for i in range(0,nodenum-2):
 				if Nbartime>=nodes[i].bartime and Nbartime<nodes[i+1].bartime:
 					assert(nodes[i].easetype==0, ipnyi%[Nbartime,self.wid])
 					var _x := nodes[i].x
@@ -167,6 +187,10 @@ class WishGroup:
 				node.x += dx
 				node.y += dy
 				node.bartime += dbt
+			for hint in _childhints:
+				hint.x += dx
+				hint.y += dy
+				hint.bartime += dbt
 			if trim and nodes[0].bartime<0:
 				self.try_interpolate(0)
 				var _nodes:Array[WishNode] = []
@@ -182,6 +206,30 @@ class WishGroup:
 			self.p()
 			for i in range(1,number_of_times+1):
 				Arf.Wish.append(self._duplicate(_dz).move(i*dx,i*dy,i*dbt,trim))
+		return self
+	func mirror_lr() -> WishGroup:
+		var nodenum := nodes.size()
+		if nodenum==0: return self
+		else:
+			for node in nodes:
+				node.x = 16 - node.x
+		var chnum := _childhints.size()
+		if chnum==0: return self
+		else:
+			for hint in _childhints:
+				hint.x = 16 - hint.x
+		return self
+	func mirror_ud() -> WishGroup:
+		var nodenum := nodes.size()
+		if nodenum==0: return self
+		else:
+			for node in nodes:
+				node.y = 8 - node.y
+		var chnum := _childhints.size()
+		if chnum==0: return self
+		else:
+			for hint in _childhints:
+				hint.y = 8 - hint.y
 		return self
 	func r(at:float,radius:float=6,degree:float=90) -> WishGroup:
 		var nodenum := nodes.size()
@@ -262,16 +310,33 @@ class WishGroup:
 		elif is_equal_approx(degree,270):
 			_y0 -= radius
 		else:
-			degree = degree/180 * PI
+			degree = deg_to_rad(degree)
 			_x0 += radius*cos( degree )
 			_y0 += radius*sin( degree )
 		return Arf._w(_x0,_y0,_at0,_t0,0.05).n(_x1,_y1,at).h(at)
+	func pivot(init_x:float,init_y:float,init_bt:float,at:float) -> WishGroup:
+		assert(init_bt>=0 and at>=0, notnegative%"Bartime" )
+		assert(init_bt<at, "Initial Bartime must be smaller than the collision Bartime \"at\".")
+		var nodenum:int = nodes.size()
+		assert(nodenum>1, "Wish(WID:%s) must be interpolatable to Create a Pivot Wish." % self.wid )
+		for i in range(0,nodenum-2):
+			if at>=nodes[i].bartime and at<nodes[i+1].bartime:
+				var _x := nodes[i].x
+				var _y := nodes[i].y
+				var dx := nodes[i+1].x - _x
+				var dy := nodes[i+1].y - _y
+				var interpolate_ratio := (at-nodes[i].bartime)/(nodes[i+1].bartime-nodes[i].bartime)
+				_x += dx*interpolate_ratio
+				_y += dy*interpolate_ratio
+				return Arf._w(init_x,init_y,init_bt).n(_x,_y,at).h(at)
+		return self
+		
 		
 	
 	func _duplicate(dz:float=0) -> WishGroup:
 		var ng := Arf.WishGroup.new()
 		ng.wid = self.wid + "d" + str(self.nextdup)
-		ng.zindex = self.zindex + clampf(dz,0,0.999999)
+		ng.zindex = int(self.zindex) + clampf(dz,0,0.999999)
 		var nodenum := self.nodes.size()
 		if nodenum>0:
 			for node in self.nodes:
@@ -281,6 +346,16 @@ class WishGroup:
 				newnode.bartime = node.bartime
 				newnode.easetype = node.easetype
 				ng.nodes.append(newnode)
+		var chnum := self._childhints.size()
+		if chnum>0:
+			for hint in self._childhints:
+				var newhint := SingleHint.new()
+				newhint.x = hint.x
+				newhint.y = hint.y
+				newhint.bartime = hint.bartime
+				newhint.zindex = hint.zindex
+				ng._childhints.append(newhint)
+				Arf.Hint.append(newhint)
 		self.nextdup += 1
 		return ng
 	func _to_arr() -> Array:
@@ -303,15 +378,6 @@ class WishGroup:
 			presult += pn
 			print(presult)
 		
-
-static var nextlrid:int = 1
-class LayerResult:
-	var id:int
-	var wish:Array[WishGroup]
-	var hint:Array[SingleHint]
-	func _init():
-		self.id = Arf.nextlrid
-		Arf.nextlrid += 1
 
 
 
@@ -337,9 +403,7 @@ static func clear_Arf() -> void:
 			YDelta = false
 		}
 	_prim_complete = false
-	LayerResults.resize(0)
 	current_zindex = 1
-	nextlrid = 1
 
 func Madeby(author:String) -> void:
 	assert(author.begins_with("·") or author.begins_with("|"), "Please Append the Tier Tag before the Author. Right:\"··|··  Arf User\"")
@@ -439,38 +503,28 @@ func wid(id) -> WishGroup:
 		return null
 
 
-func layer(z:float,strict:bool=false) -> LayerResult:
-	assert(z>0 and z<17, str_zrange)
-	var lyr := LayerResult.new()
-	if strict:
-		var dz:float = 0
-		for wishgroup in Arf.Wish:
-			dz = wishgroup.zindex - z
-			if dz>=-0.000001 and dz<=0.000001: lyr.wish.append(wishgroup)
-	else:
-		z = int(z)
-		for wishgroup in Arf.Wish:
-			if wishgroup.zindex>=z and wishgroup.zindex<z+1: lyr.wish.append(wishgroup)
-		for _hint in Arf.Hint:
-			if _hint.zindex==z: lyr.hint.append(_hint)
-	LayerResults.append(lyr)
-	return lyr
-
-func layerid(id:int) -> LayerResult:
-	assert(_prim_complete, prim_not_fixed)
-	assert(id>0 and id<=LayerResults.size())
-	return LayerResults[id-1]
 
 # Fumen Stuff (Pattern Part)
 # Commonly, use w(),n(),h() only.
 const DUAL_SCALE := 1.51
 const DUAL_TYPE := 33
-func dual(x:float,y:float,bartime:float,radius:float=3,degree:float=90,delta_degree:float=180) -> void:
+func dual(x:float,y:float,bartime:float,radius:float=3,degree:float=90,delta_degree:float=180) -> Array[WishGroup]:
 	var _t0:float = bartime-radius*DUAL_SCALE
 	if _t0<0:
 		_t0 = 0
 		radius = bartime/DUAL_SCALE
 	degree = degree/180.0*PI
 	delta_degree = degree + delta_degree/180.0*PI
-	Arf._w(x+radius*cos(degree),y+radius*sin(degree),bartime-(radius*DUAL_SCALE)*0.0625,DUAL_TYPE).n(x,y,bartime).h(bartime)
-	Arf._w(x+radius*cos(delta_degree),y+radius*sin(delta_degree),bartime-(radius*DUAL_SCALE)*0.0625,DUAL_TYPE,0.05).n(x,y,bartime)
+	var a:= Arf._w(x+radius*cos(degree),y+radius*sin(degree),bartime-(radius*DUAL_SCALE)*0.0625,DUAL_TYPE).n(x,y,bartime).h(bartime)
+	var b:= Arf._w(x+radius*cos(delta_degree),y+radius*sin(delta_degree),bartime-(radius*DUAL_SCALE)*0.0625,DUAL_TYPE,0.05).n(x,y,bartime)
+	return [a,b]
+func dual_without_hint(x:float,y:float,bartime:float,radius:float=3,degree:float=90,delta_degree:float=180) -> Array[WishGroup]:
+	var _t0:float = bartime-radius*DUAL_SCALE
+	if _t0<0:
+		_t0 = 0
+		radius = bartime/DUAL_SCALE
+	degree = degree/180.0*PI
+	delta_degree = degree + delta_degree/180.0*PI
+	var a:= Arf._w(x+radius*cos(degree),y+radius*sin(degree),bartime-(radius*DUAL_SCALE)*0.0625,DUAL_TYPE).n(x,y,bartime)
+	var b:= Arf._w(x+radius*cos(delta_degree),y+radius*sin(delta_degree),bartime-(radius*DUAL_SCALE)*0.0625,DUAL_TYPE,0.05).n(x,y,bartime)
+	return [a,b]

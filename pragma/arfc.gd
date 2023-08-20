@@ -214,11 +214,16 @@ static func detect_camera() -> bool:
 # mstime -> DTime: Manual.
 static var compiled := false
 static func compile() -> void: #ArfResult doesn't contain custom objects.
-	assert(Arf.Wish.size()>0, "Please Add at least 1 Wish in \"fumen.gd\".")
-	assert(Arf.Hint.size()>0, "Please Add at least 1 Hint in \"fumen.gd\".")
 	
 	clear_Arfc()
 	make_b2mList()
+	
+	if Arf.Wish.size()==0:
+		print("\nPlease Add at least 1 Wish in \"fumen.gd\".")
+		return
+	if Arf.Hint.size()==0:
+		print("Please Add at least 1 Hint in \"fumen.gd\".")
+		return
 	
 	# Compile Hints
 	# 1.sort
@@ -228,8 +233,9 @@ static func compile() -> void: #ArfResult doesn't contain custom objects.
 	var _i:int = 0
 	_h.resize(Arf.Hint.size())
 	for singlehint in Arf.Hint:
-		_h[_i] = singlehint._to_arr()
-		_i += 1
+		if singlehint.bartime >= 0:
+			_h[_i] = singlehint._to_arr()
+			_i += 1
 	# 3.update ArfResult.Info.Hints
 	ArfResult.Hint = _h
 	ArfResult.Info.Hints = _i
@@ -414,7 +420,12 @@ static func size4(arr:Array) -> String:
 	assert(arr.size()==4)
 	return "v(%s,%s,%s,%s)" % [Arf.num(arr[0]),Arf.num(arr[1]),Arf.num(arr[2]),Arf.num(arr[3])]
 static func export() -> void:
+	
 	if not compiled: Arfc.compile()
+	if not compiled:
+		print("Failed to Export this Fumen.")
+		return
+
 	var exported:Dictionary = ArfResult.duplicate(true)
 	# Remove wid Signal
 	# use Arf.num(),size3(),size4() to convert all Numbers into String

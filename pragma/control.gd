@@ -8,6 +8,7 @@ const su50 := "scrollup_50ms"
 const sd50 := "scrolldown_50ms"
 const su500 := "scrollup_500ms"
 const sd500 := "scrolldown_500ms"
+const _fps := "( %d fps )"
 
 # Variables
 var _05x:bool = false
@@ -74,6 +75,7 @@ func _physics_process(_delta:float) -> void:
 # Updater
 var last_progress:float = -1
 func _process(_delta:float) -> void:
+	$FPS.text = _fps % Performance.get_monitor(Performance.TIME_FPS)
 	if stream!=null and not stream_paused:
 		@warning_ignore("narrowing_conversion")
 		current_progress = (get_playback_position() + AudioServer.get_time_since_last_mix() - AudioServer.get_output_latency()) * 1000
