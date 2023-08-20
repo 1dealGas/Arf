@@ -118,6 +118,8 @@ static func ArCamera(nodes:Array=[], progress:int=-1, zindex:int=1) -> Array:
 				else:
 					var poll_progress:int = znt[0]
 					var type_interpolated := false
+					while poll_progress > 2 and progress < znt[poll_progress-1][0]:
+						poll_progress -= 1
 					while poll_progress != zntlen and not type_interpolated:
 						if znt[poll_progress-1][0] <= progress and znt[poll_progress][0] > progress:
 							var t0:float = znt[poll_progress-1][0]
@@ -139,6 +141,8 @@ static func ArCamera(nodes:Array=[], progress:int=-1, zindex:int=1) -> Array:
 				else:
 					var poll_progress:int = znt[0]
 					var type_interpolated := false
+					while poll_progress > 2 and progress < znt[poll_progress-1][0]:
+						poll_progress -= 1
 					while poll_progress != zntlen and not type_interpolated:
 						if znt[poll_progress-1][0] <= progress and znt[poll_progress][0] > progress:
 							var t0:float = znt[poll_progress-1][0]
@@ -160,6 +164,8 @@ static func ArCamera(nodes:Array=[], progress:int=-1, zindex:int=1) -> Array:
 				else:
 					var poll_progress:int = znt[0]
 					var type_interpolated := false
+					while poll_progress > 2 and progress < znt[poll_progress-1][0]:
+						poll_progress -= 1
 					while poll_progress != zntlen and not type_interpolated:
 						if znt[poll_progress-1][0] <= progress and znt[poll_progress][0] > progress:
 							var t0:float = znt[poll_progress-1][0]
@@ -181,6 +187,8 @@ static func ArCamera(nodes:Array=[], progress:int=-1, zindex:int=1) -> Array:
 				else:
 					var poll_progress:int = znt[0]
 					var type_interpolated := false
+					while poll_progress > 2 and progress < znt[poll_progress-1][0]:
+						poll_progress -= 1
 					while poll_progress != zntlen and not type_interpolated:
 						if znt[poll_progress-1][0] <= progress and znt[poll_progress][0] > progress:
 							var t0:float = znt[poll_progress-1][0]
@@ -202,6 +210,8 @@ static func ArCamera(nodes:Array=[], progress:int=-1, zindex:int=1) -> Array:
 				else:
 					var poll_progress:int = znt[0]
 					var type_interpolated := false
+					while poll_progress > 2 and progress < znt[poll_progress-1][0]:
+						poll_progress -= 1
 					while poll_progress != zntlen and not type_interpolated:
 						if znt[poll_progress-1][0] <= progress and znt[poll_progress][0] > progress:
 							var t0:float = znt[poll_progress-1][0]
