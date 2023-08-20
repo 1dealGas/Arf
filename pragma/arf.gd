@@ -506,25 +506,47 @@ func wid(id) -> WishGroup:
 
 # Fumen Stuff (Pattern Part)
 # Commonly, use w(),n(),h() only.
-const DUAL_SCALE := 1.51
-const DUAL_TYPE := 33
-func dual(x:float,y:float,bartime:float,radius:float=3,degree:float=90,delta_degree:float=180) -> Array[WishGroup]:
-	var _t0:float = bartime-radius*DUAL_SCALE
+const DUAL_SCALE := 5.6
+const DUAL_TYPE := 0
+func dual(x:float,y:float,bartime:float,radius:float=1.25,degree:float=90,delta_degree:float=180) -> Array[WishGroup]:
+	var _t0:float = bartime-radius*DUAL_SCALE*0.0625
 	if _t0<0:
 		_t0 = 0
 		radius = bartime/DUAL_SCALE
-	degree = degree/180.0*PI
-	delta_degree = degree + delta_degree/180.0*PI
-	var a:= Arf._w(x+radius*cos(degree),y+radius*sin(degree),bartime-(radius*DUAL_SCALE)*0.0625,DUAL_TYPE).n(x,y,bartime).h(bartime)
-	var b:= Arf._w(x+radius*cos(delta_degree),y+radius*sin(delta_degree),bartime-(radius*DUAL_SCALE)*0.0625,DUAL_TYPE,0.05).n(x,y,bartime)
+	degree = deg_to_rad(degree)
+	delta_degree = degree + deg_to_rad(delta_degree)
+	var a := Arf._w(x+radius*cos(degree),y+radius*sin(degree),bartime-(radius*DUAL_SCALE)*0.0625,DUAL_TYPE).n(x,y,bartime).h(bartime)
+	var b := Arf._w(x+radius*cos(delta_degree),y+radius*sin(delta_degree),bartime-(radius*DUAL_SCALE)*0.0625,DUAL_TYPE,0.05).n(x,y,bartime)
+	if DUAL_TYPE == 0:
+		a.try_interpolate(_t0+0.125)
+		b.try_interpolate(_t0+0.125)
 	return [a,b]
-func dual_without_hint(x:float,y:float,bartime:float,radius:float=3,degree:float=90,delta_degree:float=180) -> Array[WishGroup]:
-	var _t0:float = bartime-radius*DUAL_SCALE
+func dual_without_hint(x:float,y:float,bartime:float,radius:float=1.25,degree:float=90,delta_degree:float=180) -> Array[WishGroup]:
+	var _t0:float = bartime-radius*DUAL_SCALE*0.0625
 	if _t0<0:
 		_t0 = 0
 		radius = bartime/DUAL_SCALE
-	degree = degree/180.0*PI
-	delta_degree = degree + delta_degree/180.0*PI
-	var a:= Arf._w(x+radius*cos(degree),y+radius*sin(degree),bartime-(radius*DUAL_SCALE)*0.0625,DUAL_TYPE).n(x,y,bartime)
-	var b:= Arf._w(x+radius*cos(delta_degree),y+radius*sin(delta_degree),bartime-(radius*DUAL_SCALE)*0.0625,DUAL_TYPE,0.05).n(x,y,bartime)
+	degree = deg_to_rad(degree)
+	delta_degree = degree + deg_to_rad(delta_degree)
+	var a := Arf._w(x+radius*cos(degree),y+radius*sin(degree),bartime-(radius*DUAL_SCALE)*0.0625,DUAL_TYPE).n(x,y,bartime).h(bartime)
+	var b := Arf._w(x+radius*cos(delta_degree),y+radius*sin(delta_degree),bartime-(radius*DUAL_SCALE)*0.0625,DUAL_TYPE,0.05).n(x,y,bartime)
+	if DUAL_TYPE == 0:
+		a.try_interpolate(_t0+0.125)
+		b.try_interpolate(_t0+0.125)
 	return [a,b]
+func pop(x:float,y:float,bartime:float,radius:float=1.25) -> Array[WishGroup]:
+	randomize()
+	var _degree:float = randf_range(0,360)
+	randomize()
+	var _delta:float = randf_range(60,180)
+	return dual(x,y,bartime,radius,_degree,_delta)
+func lp(bartime:float) -> Array[WishGroup]:
+	randomize()
+	var _x:float = randf_range(3,13)
+	randomize()
+	var _y:float = randf_range(1,7)
+	randomize()
+	var _degree:float = randf_range(0,360)
+	#randomize()
+	#var _delta:float = randf_range(90,180)
+	return dual(_x,_y,bartime,1.25,_degree,180)

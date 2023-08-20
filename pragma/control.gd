@@ -103,19 +103,19 @@ const SCROLL_SCALE:float = 23.7
 func _unhandled_input(event:InputEvent) -> void:
 	if stream == null or not(stream_paused): return
 	if event is InputEventPanGesture:
-		current_progress = clampi(current_progress+event.delta.y*SCROLL_SCALE,0,audio_length-100)
+		current_progress = clampi(current_progress+event.delta.y*SCROLL_SCALE,10,audio_length-100)
 		_seek(current_progress)
 	elif event.is_action_pressed(su500):
-		current_progress = clampi(current_progress+500,0,audio_length-100)
+		current_progress = clampi(current_progress+500,10,audio_length-100)
 		_seek(current_progress)
 	elif event.is_action_pressed(sd500):
-		current_progress = clampi(current_progress-500,0,audio_length-100)
+		current_progress = clampi(current_progress-500,10,audio_length-100)
 		_seek(current_progress)
 	elif event.is_action_pressed(su50):
-		current_progress = clampi(current_progress+50,0,audio_length-100)
+		current_progress = clampi(current_progress+50,10,audio_length-100)
 		_seek(current_progress)
 	elif event.is_action_pressed(sd50):
-		current_progress = clampi(current_progress-50,0,audio_length-100)
+		current_progress = clampi(current_progress-50,10,audio_length-100)
 		_seek(current_progress)
 	
 
