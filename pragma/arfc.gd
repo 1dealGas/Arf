@@ -219,10 +219,10 @@ static func compile() -> void: #ArfResult doesn't contain custom objects.
 	make_b2mList()
 	
 	if Arf.Wish.size()==0:
-		print("\nPlease Add at least 1 Wish in \"fumen.gd\".")
+		print("\nPlease Add at least 1 Wish in \"〈Fumen〉.gd\".")
 		return
 	if Arf.Hint.size()==0:
-		print("A placeholder Hint is put in the compile result, which will be discarded if you add at least 1 Hint in \"fumen.gd\".")
+		print("A placeholder Hint is put in the compile result, which will be discarded if you add at least 1 Hint in \"〈Fumen〉.gd\".")
 		Arf.Hint.append(SingleHint.new())
 	
 	# Compile Hints
