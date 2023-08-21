@@ -27,8 +27,11 @@ const ub := "Inserting multiple %s Nodes with the same bartime will cause Undefi
 const Positive := "%s must be a positive value."
 const notnegative := "%s must be a non-negative value."
 
-static var _prim_complete:bool = false
 static var current_zindex:int = 1
+static var _hispeed:float = 1
+static var _prim_complete:bool = false
+func Hispeed(hi:float) -> void:
+	_hispeed = clampf(hi,0.001,512000)
 
 class SingleHint:
 	var x:float = 37
@@ -238,7 +241,7 @@ class WishGroup:
 		var nodenum := nodes.size()
 		if nodenum<2: return self
 		assert(at>=0, notnegative%"Bartime" )
-		var _at0:float = at - 0.0625*radius
+		var _at0:float = at - 0.0625*radius/Arf._hispeed
 		if _at0<0:
 			_at0 = 0
 			radius = at
@@ -405,8 +408,9 @@ static func clear_Arf() -> void:
 			XDelta = false,
 			YDelta = false
 		}
-	_prim_complete = false
 	current_zindex = 1
+	_prim_complete = false
+	_hispeed = 1
 
 func Madeby(author:String) -> void:
 	assert(author.begins_with("·") or author.begins_with("|"), "Please Append the Tier Tag before the Author. Right:\"··|··  Arf User\"")
@@ -564,11 +568,11 @@ func rc(x:float,y:float,bartime:float,radius:float=1.25,degree:float=90) -> Arra
 	var b := Arf._w(x,y,_t0).n(x,y,bartime).try_interpolate(_t0+0.09375).h(bartime)
 	if DUAL_TYPE == 0: a.try_interpolate(_t0+0.09375).try_interpolate(bartime-0.000001)
 	return [a,b]
-func iw(x:float,y:float,bartime:float,radius:float=6,degree:float=90) -> WishGroup:
-	var _t0:float = bartime-radius*0.0625
+func iw(x:float,y:float,bartime:float,radius:float=6.837,degree:float=90) -> WishGroup:
+	var _t0:float = bartime-radius*0.0625/_hispeed
 	if _t0<0:
 		_t0 = 0
 		radius = bartime*16
 	degree = deg_to_rad(degree)
-	Arf._w(x+radius*cos(degree),y+radius*sin(degree),_t0,0,0.01)
+	Arf._w(x+radius*cos(degree),y+radius*sin(degree),_t0,0,0.01).n(x,y,bartime)
 	return Arf._w(x,y,_t0).n(x,y,bartime).h(bartime)
