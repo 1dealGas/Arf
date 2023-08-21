@@ -222,8 +222,8 @@ static func compile() -> void: #ArfResult doesn't contain custom objects.
 		print("\nPlease Add at least 1 Wish in \"fumen.gd\".")
 		return
 	if Arf.Hint.size()==0:
-		print("Please Add at least 1 Hint in \"fumen.gd\".")
-		return
+		print("A placeholder Hint is put in the compile result, which will be discarded if you add at least 1 Hint in \"fumen.gd\".")
+		Arf.Hint.append(SingleHint.new())
 	
 	# Compile Hints
 	# 1.sort

@@ -31,10 +31,10 @@ static var _prim_complete:bool = false
 static var current_zindex:int = 1
 
 class SingleHint:
-	var x:float
-	var y:float
-	var bartime:float
-	var zindex:int
+	var x:float = 37
+	var y:float = 37
+	var bartime:float = 0
+	var zindex:int = 1
 	func _to_arr() -> Array:
 		return [x,y,Arfc.get_mstime(bartime),zindex]
 class WishNode:
@@ -165,9 +165,9 @@ class WishGroup:
 	func try_interpolate(Nbartime:float) -> WishGroup:
 		var nodenum := nodes.size()
 		if nodenum<2: return self
-		elif Nbartime<=nodes[0].bartime or Nbartime>nodes[-1].bartime: return self
+		elif Nbartime<nodes[0].bartime or Nbartime>=nodes[-1].bartime: return self
 		else:
-			for i in range(0,nodenum-2):
+			for i in range(0,nodenum-1):
 				if Nbartime>=nodes[i].bartime and Nbartime<nodes[i+1].bartime:
 					assert(nodes[i].easetype==0, ipnyi%[Nbartime,self.wid])
 					var _x := nodes[i].x
@@ -515,11 +515,11 @@ func dual(x:float,y:float,bartime:float,radius:float=1.25,degree:float=90,delta_
 		radius = bartime/DUAL_SCALE
 	degree = deg_to_rad(degree)
 	delta_degree = degree + deg_to_rad(delta_degree)
-	var a := Arf._w(x+radius*cos(degree),y+radius*sin(degree),bartime-(radius*DUAL_SCALE)*0.0625,DUAL_TYPE).n(x,y,bartime).h(bartime)
-	var b := Arf._w(x+radius*cos(delta_degree),y+radius*sin(delta_degree),bartime-(radius*DUAL_SCALE)*0.0625,DUAL_TYPE,0.05).n(x,y,bartime)
+	var a := Arf._w(x+radius*cos(degree),y+radius*sin(degree),_t0,DUAL_TYPE,0.01).n(x,y,bartime).h(bartime)
+	var b := Arf._w(x+radius*cos(delta_degree),y+radius*sin(delta_degree),_t0,DUAL_TYPE).n(x,y,bartime)
 	if DUAL_TYPE == 0:
-		a.try_interpolate(_t0+0.125)
-		b.try_interpolate(_t0+0.125)
+		a.try_interpolate(_t0+0.09375).try_interpolate(bartime-0.000001)
+		b.try_interpolate(_t0+0.09375).try_interpolate(bartime-0.000001)
 	return [a,b]
 func dual_without_hint(x:float,y:float,bartime:float,radius:float=1.25,degree:float=90,delta_degree:float=180) -> Array[WishGroup]:
 	var _t0:float = bartime-radius*DUAL_SCALE*0.0625
@@ -528,11 +528,11 @@ func dual_without_hint(x:float,y:float,bartime:float,radius:float=1.25,degree:fl
 		radius = bartime/DUAL_SCALE
 	degree = deg_to_rad(degree)
 	delta_degree = degree + deg_to_rad(delta_degree)
-	var a := Arf._w(x+radius*cos(degree),y+radius*sin(degree),bartime-(radius*DUAL_SCALE)*0.0625,DUAL_TYPE).n(x,y,bartime).h(bartime)
-	var b := Arf._w(x+radius*cos(delta_degree),y+radius*sin(delta_degree),bartime-(radius*DUAL_SCALE)*0.0625,DUAL_TYPE,0.05).n(x,y,bartime)
+	var a := Arf._w(x+radius*cos(degree),y+radius*sin(degree),_t0,DUAL_TYPE,0.01).n(x,y,bartime).h(bartime)
+	var b := Arf._w(x+radius*cos(delta_degree),y+radius*sin(delta_degree),_t0,DUAL_TYPE).n(x,y,bartime)
 	if DUAL_TYPE == 0:
-		a.try_interpolate(_t0+0.125)
-		b.try_interpolate(_t0+0.125)
+		a.try_interpolate(_t0+0.09375).try_interpolate(bartime-0.000001)
+		b.try_interpolate(_t0+0.09375).try_interpolate(bartime-0.000001)
 	return [a,b]
 func pop(x:float,y:float,bartime:float,radius:float=1.25) -> Array[WishGroup]:
 	randomize()
@@ -548,5 +548,15 @@ func lp(bartime:float) -> Array[WishGroup]:
 	randomize()
 	var _degree:float = randf_range(0,360)
 	#randomize()
-	#var _delta:float = randf_range(90,180)
+	#var _delta:float = randf_range(60,180)
 	return dual(_x,_y,bartime,1.25,_degree,180)
+func rc(x:float,y:float,bartime:float,radius:float=1.25,degree:float=90) -> Array[WishGroup]:
+	var _t0:float = bartime-radius*DUAL_SCALE*0.0625
+	if _t0<0:
+		_t0 = 0
+		radius = bartime/DUAL_SCALE
+	degree = deg_to_rad(degree)
+	var a := Arf._w(x+radius*cos(degree),y+radius*sin(degree),_t0,DUAL_TYPE,0.01).n(x,y,bartime)
+	var b := Arf._w(x,y,_t0).n(x,y,bartime).try_interpolate(_t0+0.09375).h(bartime)
+	if DUAL_TYPE == 0: a.try_interpolate(_t0+0.09375).try_interpolate(bartime-0.000001)
+	return [a,b]
