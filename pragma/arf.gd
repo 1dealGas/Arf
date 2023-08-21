@@ -68,6 +68,9 @@ func t(Ninitbt:float, Nvalue:float, Neasetype:int=0) -> CamNode:
 	_t.value = Nvalue
 	_t.easetype = Neasetype
 	return _t
+func c(base:int,numerator:int,denominator:int) -> float:
+	assert(numerator<=denominator and denominator!=0)
+	return float(base)+float(numerator)/float(denominator)
 
 static var easecalc:float = 0
 static func EASE(ratio:float,type:int) -> float:
@@ -107,7 +110,7 @@ class WishGroup:
 	
 	var zindex:float = 1.0
 	var nodes:Array[WishNode]
-	func n(Nx:float=0,Ny:float=0,Nbartime:float=0,Neasetype:int=0) -> WishGroup:
+	func n(Nx:float,Ny:float,Nbartime:float,Neasetype:int=0) -> WishGroup:
 		var newnode:= WishNode.new()
 		newnode.x = Nx
 		newnode.y = Ny
