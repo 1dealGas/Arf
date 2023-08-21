@@ -337,8 +337,14 @@ class WishGroup:
 				return Arf._w(init_x,init_y,init_bt).n(_x,_y,at).h(at)
 		return self
 		
-		
 	
+	func f(remain:float=0.9375) -> WishGroup:
+		if nodes.size()>1:
+			var _nt1:float = nodes[-1].bartime
+			var _nt2:float = nodes[-2].bartime
+			if _nt1-_nt2 >= remain: return self.try_interpolate(_nt1-remain)
+			else: return self
+		else: return self
 	func _duplicate(dz:float=0) -> WishGroup:
 		var ng := Arf.WishGroup.new()
 		ng.wid = self.wid + "d" + str(self.nextdup)
@@ -568,7 +574,7 @@ func rc(x:float,y:float,bartime:float,radius:float=1.25,degree:float=90) -> Arra
 	var b := Arf._w(x,y,_t0).n(x,y,bartime).try_interpolate(_t0+0.09375).h(bartime)
 	if DUAL_TYPE == 0: a.try_interpolate(_t0+0.09375).try_interpolate(bartime-0.000001)
 	return [a,b]
-func iw(x:float,y:float,bartime:float,radius:float=6.837,degree:float=90) -> WishGroup:
+func iw(x:float,y:float,bartime:float,radius:float=6,degree:float=90) -> WishGroup:
 	var _t0:float = bartime-radius*0.0625/_hispeed
 	if _t0<0:
 		_t0 = 0
