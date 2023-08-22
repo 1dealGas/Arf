@@ -19,12 +19,12 @@ func fumen():
 	iw(7,1,1.25).n(7,1,1.375).n(10,1,2.875,30).f()
 	iw(9,1,1.375).n(13,1,2.875,30).f()
 	
-	# Wish Parent-Children Relation hasn't been implemented yet.
-	#for i in [
-		#iw(5,1,1).n(5,1,1.375).n(7,1,2.875,30).f(),
-		#iw(3,1,1.125).n(3,1,1.375).n(4,1,2.875,30).f(),
-		#iw(7,1,1.25).n(7,1,1.375).n(10,1,2.875,30).f(),
-		#iw(9,1,1.375).n(13,1,2.875,30).f()
-	#]:
-		#(i as WishGroup).move(0,0,2).mirror_lr()
+	# Wish Parent-Children Relation is implemented now.
+	for i in [
+		iw(5,1,1).n(5,1,1.375).n(7,1,2.875,30).f(),
+		iw(3,1,1.125).n(3,1,1.375).n(4,1,2.875,30).f(),
+		iw(7,1,1.25).n(7,1,1.375).n(10,1,2.875,30).f(),
+		iw(9,1,1.375).n(13,1,2.875,30).f()
+	]:
+		(i as WishGroup).move(0,0,2).mirror_lr()
 	
