@@ -292,20 +292,26 @@ static func compile() -> void: #ArfResult doesn't contain custom objects.
 	ArfResult.Wish = _g
 	
 	# Compile Info(Init,End,Traits.Camera)
-	var timemin:int = 512000
-	var timemax:int = 0
+	var timemin:float = 512000
+	var timemax:float = 0
 	for harray in ArfResult.Hint:
 		#[x,y,mstime,zindex]
 		if harray[2]>timemax: timemax = harray[2]
-		if harray[2]<timemin: timemin = harray[2]
-	var wgtime:int = 0
+		elif harray[2]<timemin: timemin = harray[2]
+	var _nt:float = 0
+	for wishgroup in Arf.Wish:
+		for node in wishgroup.nodes:
+			_nt = get_mstime(node.bartime)
+			if _nt>timemax: timemax = _nt
+			elif _nt<timemin: timemin = _nt
 	var before:Array = []
 	var after:Array = []
 	for wgarray in ArfResult.Wish:
 		for i in range(2,(wgarray as Array).size()-1):
-			wgtime = wgarray[i][2]
-			if wgtime>timemax: timemax = wgtime
-			if wgtime<timemin: timemin = wgtime
+			#Abandoned because these "times" are DTime values.
+			#var wgtime:float = wgarray[i][2]
+			#if wgtime>timemax: timemax = wgtime
+			#if wgtime<timemin: timemin = wgtime
 			if i>2:
 				before = wgarray[i-1]
 				after = wgarray[i]
@@ -412,7 +418,7 @@ static func compile() -> void: #ArfResult doesn't contain custom objects.
 	compiled = true
 
 const path := "user://export.ar"
-const luahead := "local t,v,e=vmath.vector3,vmath.vector4,{} return "
+const luahead := "local t,v,e,_=vmath.vector3,vmath.vector4,{}\nreturn "
 static func size3(arr:Array) -> String:
 	assert(arr.size()==3)
 	return "t(%s,%s,%s)" % [Arf.num(arr[0]),Arf.num(arr[1]),Arf.num(arr[2])]
@@ -468,7 +474,7 @@ static func export() -> void:
 	exported_str = exported_str.replace(Arf._Madeby, "\""+Arf._Madeby+"\"")
 	# Save the Result in a file
 	var _file := FileAccess.open(path, FileAccess.WRITE_READ)
-	_file.store_string(luahead+exported_str)
+	_file.store_string(luahead + exported_str)
 	_file.close()
 	_file = null
 	print("Arf from fumen.gd is exported to %s" % ProjectSettings.globalize_path(path))
