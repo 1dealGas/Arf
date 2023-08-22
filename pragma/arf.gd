@@ -210,15 +210,20 @@ class WishGroup:
 			for child in _child:
 				child.move(dx,dy,dbt,trim)
 		return self
-	func delay(dx:float,dy:float,dbt:float,number_of_times:int=1,trim:bool=true) -> WishGroup:
+	func copy(dx:float,dy:float,dbt:float,number_of_times:int=1,trim:bool=true) -> WishGroup:
 		if number_of_times>0:
-			var _dz:float = self.nextdup/10000.0
+			var _dz:float = float(self.nextdup)/10000.0
 			var zi:float = self.zindex + _dz
-			print("Copied the Wish below for %i time(s). Call layer(%.4f,true) to acquire the copies."%[number_of_times,zi])
+			print("\nCopied the Wish below for %d time(s). Call layer( %.4f ,true) to acquire the copies."%[number_of_times,zi])
 			self.p()
-			for i in range(1,number_of_times+1):
-				self._duplicate(_dz).move(i*dx,i*dy,i*dbt,trim)
-		return self
+			print()
+			var _1st := self._duplicate(_dz).move(dx,dy,dbt,trim)
+			if number_of_times > 1:
+				print("Notice: Only the 1st copy result will be returned.")
+				for i in range(2,number_of_times+1):
+					self._duplicate(_dz).move(i*dx,i*dy,i*dbt,trim)
+			return _1st
+		else: return self
 	func mirror_lr() -> WishGroup:
 		var nodenum := nodes.size()
 		if nodenum==0: return self
@@ -391,7 +396,7 @@ class WishGroup:
 		if _child.size()>0:
 			print(_haschild % self.wid)
 			for child in _child:
-				child._duplicate()
+				ng._child.append(child._duplicate())
 		return ng
 	func _to_arr() -> Array:
 		var arr:Array = [3]

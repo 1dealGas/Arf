@@ -61,7 +61,6 @@ func _enter_tree() -> void:
 		$Time.text = TIMESTR % timet
 		play()
 		stream_paused = true
-		print("")
 	else:
 		print("\nPlease Set the Audio Stream before Viewing Your Work.")
 
