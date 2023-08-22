@@ -297,13 +297,13 @@ static func compile() -> void: #ArfResult doesn't contain custom objects.
 	for harray in ArfResult.Hint:
 		#[x,y,mstime,zindex]
 		if harray[2]>timemax: timemax = harray[2]
-		elif harray[2]<timemin: timemin = harray[2]
+		if harray[2]<timemin: timemin = harray[2]
 	var _nt:float = 0
 	for wishgroup in Arf.Wish:
 		for node in wishgroup.nodes:
 			_nt = get_mstime(node.bartime)
 			if _nt>timemax: timemax = _nt
-			elif _nt<timemin: timemin = _nt
+			if _nt<timemin: timemin = _nt
 	var before:Array = []
 	var after:Array = []
 	for wgarray in ArfResult.Wish:
@@ -321,7 +321,7 @@ static func compile() -> void: #ArfResult doesn't contain custom objects.
 	if timemin>512:
 		ArfResult.Info.Init = int(timemin) - 512
 	else:
-		ArfResult.Info.Init = int(timemin)
+		ArfResult.Info.Init = 0
 	ArfResult.Info.End = int(timemax) + 512
 	
 	if detect_camera():
