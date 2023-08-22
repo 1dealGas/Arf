@@ -56,6 +56,8 @@ class CamNode:
 		return [Arfc.get_mstime(init_bartime),value,easetype]
 static func num(i:float) -> String:
 	return str(float("%.6f"%i))
+static func num2(i:float) -> float:
+	return float("%.2f"%i)
 static func WishNodeSorter(a:WishNode,b:WishNode) -> bool:
 	assert(a.bartime!=b.bartime,ub%"Wish")
 	if a.bartime < b.bartime: return true

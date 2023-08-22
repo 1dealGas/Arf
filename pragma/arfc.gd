@@ -252,6 +252,7 @@ static func compile() -> void: #ArfResult doesn't contain custom objects.
 	_i = 0
 	_g.resize(Arf.Wish.size())
 	for wishgroup in Arf.Wish:
+		wishgroup.zindex = Arf.num2(wishgroup.zindex)  # deduce the zindex precision to help batching.
 		_g[_i] = wishgroup._to_arr()
 		_i += 1
 
@@ -477,4 +478,6 @@ static func export() -> void:
 	_file.store_string(luahead + exported_str)
 	_file.close()
 	_file = null
-	print("Arf from fumen.gd is exported to %s" % ProjectSettings.globalize_path(path))
+	var _glb := ProjectSettings.globalize_path(path)
+	print("Arf from fumen.gd is exported to %s" % _glb)
+	OS.shell_show_in_file_manager(_glb)
