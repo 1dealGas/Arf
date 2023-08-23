@@ -103,13 +103,13 @@ corner_radius_bottom_right = 7
 corner_radius_bottom_left = 7
 corner_detail = 5
 
-[sub_resource type="InputEventKey" id="InputEventKey_rbf8h"]
+[sub_resource type="InputEventKey" id="InputEventKey_irsya"]
 device = -1
-keycode = 32
-unicode = 32
+keycode = 80
+unicode = 112
 
 [sub_resource type="Shortcut" id="Shortcut_rw2rt"]
-events = [SubResource("InputEventKey_rbf8h")]
+events = [SubResource("InputEventKey_irsya")]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_71rx8"]
 bg_color = Color(1, 1, 1, 1)
@@ -257,6 +257,7 @@ theme_override_styles/hover = SubResource("StyleBoxFlat_7s3gy")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_skne7")
 toggle_mode = true
 shortcut = SubResource("Shortcut_rw2rt")
+shortcut_in_tooltip = false
 icon = ExtResource("4_hu41f")
 icon_alignment = 1
 expand_icon = true

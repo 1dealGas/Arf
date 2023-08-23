@@ -8,6 +8,7 @@ const su50 := "scrollup_50ms"
 const sd50 := "scrolldown_50ms"
 const su500 := "scrollup_500ms"
 const sd500 := "scrolldown_500ms"
+const ui_a := "ui_accept"
 const _fps := "( %d fps )"
 
 # Variables
@@ -117,7 +118,10 @@ func _unhandled_input(event:InputEvent) -> void:
 	elif event.is_action_pressed(sd50):
 		current_progress = clampi(current_progress-50,10,audio_length-100)
 		_seek(current_progress)
-	
+func _input(event:InputEvent) -> void :
+	if event.is_action_pressed(ui_a):
+		if $LineEdit.has_focus(): return
+		print( Arfc.get_bartime(current_progress) )
 
 # Button
 func _on_export_button_button_up() -> void:
