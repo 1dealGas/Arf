@@ -97,7 +97,7 @@ static func make_b2mList() -> void:
 	for i in range(0,bpmsize,2):
 		b2mList.append( B2MNode.new(BPMList[i],BPMList[i+1]) )
 	b2mList.sort_custom(Arfc.B2MSorter)
-	b2mList[0].base_ms = _Offset
+	b2mList[0].base_ms = Arf._Offset
 	if bpmsize>2:
 		for i in range(1,b2mList.size()):
 			b2mList[i].base_ms = b2mList[i-1].base_ms + (240000.0/b2mList[i-1].BPM)*(b2mList[i].init_bartime-b2mList[i-1].init_bartime)
@@ -367,7 +367,7 @@ static func compile() -> void: #ArfResult doesn't contain custom objects.
 	var widx:Array[Array] = []
 	var hidx:Array[Array] = []
 	@warning_ignore("integer_division")
-	var idxsize = (int(timemax)+512)/512 + 1
+	var idxsize = (int(timemax))/512 + 1
 	widx.resize(idxsize)
 	hidx.resize(idxsize)
 	for i in range(0,idxsize):

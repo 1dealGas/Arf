@@ -17,9 +17,6 @@ static var Z:Array[Dictionary]  #Arrays related to ZIndex.
 # Base Stuff
 const str_zrange := "\"z\" must be an interger in [1,16]."
 const add_camnodes := "Please add CamNodes. Right: [t(init_time1,value1,easetype1),t(init_time2,value2,easetype2),···]"
-const invalid_verification := "Invalid verification. To get the valid verification, append \".p()\" in your last primitive WishGroup, and read the WID from the Debug Output."
-const prim_not_fixed := "Make sure you complete all Primitive WishGroups. Call \"prim_complete(verification)\" then."
-const repeated_tag := "Don't tag your fumen with \"prim_complete\" repeatedly."
 const wish_not_exist := "This Wish doesn't exist in Bartime %.4f"
 const req := "At least 2 Nodes are required to generate a Hint."
 const ipnyi := "Non-linear Interpolation is not implemented yet. Node Bartime:%.4f WID:%s"
@@ -30,7 +27,6 @@ const _haschild := "Wish(WID:%s) contains child Wish(es). Check whether there is
 
 static var current_zindex:int = 1
 static var _hispeed:float = 1
-static var _prim_complete:bool = false
 func Hispeed(hi:float) -> void:
 	_hispeed = clampf(hi,0.001,512000)
 
@@ -113,7 +109,6 @@ class WishGroup:
 	var _child:Array[WishGroup] = []
 	var _childhints:Array[SingleHint] = []
 	var wid:String
-	var nextdup:int = 1
 	
 	var zindex:float = 1.0
 	var nodes:Array[WishNode]
@@ -214,16 +209,14 @@ class WishGroup:
 		return self
 	func copy(dx:float,dy:float,dbt:float,number_of_times:int=1,trim:bool=true) -> WishGroup:
 		if number_of_times>0:
-			var _dz:float = float(self.nextdup)/10000.0
-			var zi:float = self.zindex + _dz
-			print("\nCopied the Wish below for %d time(s). Call layer( %.4f ,true) to acquire the copies."%[number_of_times,zi])
+			print("\nCopied the Wish below for %d time(s)." % number_of_times)
 			self.p()
 			print()
-			var _1st := self._duplicate(_dz).move(dx,dy,dbt,trim)
+			var _1st := self._duplicate().move(dx,dy,dbt,trim)
 			if number_of_times > 1:
 				print("Notice: Only the 1st copy result will be returned.")
 				for i in range(2,number_of_times+1):
-					self._duplicate(_dz).move(i*dx,i*dy,i*dbt,trim)
+					self._duplicate().move(i*dx,i*dy,i*dbt,trim)
 			return _1st
 		else: return self
 	func mirror_lr() -> WishGroup:
@@ -370,10 +363,8 @@ class WishGroup:
 			if _nt1-_nt2 >= remain: return self.try_interpolate(_nt1-remain)
 			else: return self
 		else: return self
-	func _duplicate(dz:float=0) -> WishGroup:
+	func _duplicate() -> WishGroup:
 		var ng := Arf.WishGroup.new()
-		ng.wid = self.wid + "d" + str(self.nextdup)
-		ng.zindex = int(self.zindex) + clampf(dz,0,0.999999)
 		var nodenum := self.nodes.size()
 		if nodenum>0:
 			for node in self.nodes:
@@ -393,8 +384,8 @@ class WishGroup:
 				newhint.zindex = hint.zindex
 				ng._childhints.append(newhint)
 				Arf.Hint.append(newhint)
-		self.nextdup += 1
 		Arf.Wish.append(ng)
+		ng.wid = str(Arf.Wish.size())
 		if _child.size()>0:
 			print(_haschild % self.wid)
 			for child in _child:
@@ -445,7 +436,6 @@ static func clear_Arf() -> void:
 			YDelta = false
 		}
 	current_zindex = 1
-	_prim_complete = false
 	_hispeed = 1
 
 func Madeby(author:String) -> void:
@@ -526,23 +516,24 @@ func nw(z:int=-1,zdelta:float=0) -> WishGroup:
 	#Hint.append(nh)
 	#return nh
 
-func prim_complete(verification:int) -> void:
-	assert(Wish.size()==verification, invalid_verification)
-	assert(not _prim_complete, repeated_tag)
-	_prim_complete = true
-
 func wid(id) -> WishGroup:
-	assert(_prim_complete, prim_not_fixed)
-	if (id is int):
+	if id is int:
 		assert(id>0 and id<=Wish.size())
 		return Wish[id-1]
-	elif (id is String) and id.is_valid_int():
-		id = id.to_int()
-		assert(id>0 and id<=Wish.size())
-		return Wish[id-1]
+	elif id is String:
+		if id.is_valid_int():
+			id = id.to_int()
+			assert(id>0 and id<=Wish.size())
+			return Wish[id-1]
+		else:
+			for wishgroup in Arf.Wish:
+				if wishgroup.wid == id: return wishgroup
+			print("No WishGroup is tagged as WID %s . A new WishGroup will be created."%id)
+			var _n := nw()
+			_n.wid = id
+			return _n
 	else:
-		for wishgroup in Arf.Wish:
-			if wishgroup.wid == id: return wishgroup
+		assert(false, "Invalid id Value.")
 		return null
 
 
