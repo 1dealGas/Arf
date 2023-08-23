@@ -20,3 +20,9 @@ func fumen():
 		(i as WishGroup).copy(0,0,2).mirror_lr()
 		(i as WishGroup).copy(0,0,4)
 		(i as WishGroup).copy(0,0,6).mirror_lr()
+	
+	wid(6).r(1.625)
+	wid(2).r(1.625+0.25)
+	wid(8).r(1.625+0.5)
+	wid(6).r(1.625+0.75)
+	wid(2).r(1.625+1)

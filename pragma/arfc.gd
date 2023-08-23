@@ -47,7 +47,7 @@ static func WGArraySorter(a:Array,b:Array) -> bool:
 		else: return false
 	else: return false
 static func HintSorter(a:SingleHint,b:SingleHint) -> bool:
-	assert( not(a.bartime==b.bartime and a.x==b.x and a.y==b.y and a.zindex==b.zindex), "Completely Superposed Hints are Prohibited.")
+	assert( not(a.bartime==b.bartime and a.x==b.x and a.y==b.y and a.zindex==b.zindex and a.get_instance_id()!=b.get_instance_id()), "Completely Superposed Hints are Prohibited.")
 	if a.bartime < b.bartime:
 		if a.y <= b.y:
 			if a.x <= b.x:
