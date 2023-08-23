@@ -335,7 +335,7 @@ class WishGroup:
 			_y0 += radius*sin( degree )
 		var _new := Arf._w(_x0,_y0,_at0,_t0,0.05).n(_x1,_y1,at).h(at)
 		_child.append(_new)
-		return _new
+		return self
 	func pivot(init_x:float,init_y:float,init_bt:float,at:float) -> WishGroup:
 		assert(init_bt>=0 and at>=0, notnegative%"Bartime" )
 		assert(init_bt<at, "Initial Bartime must be smaller than the collision Bartime \"at\".")
