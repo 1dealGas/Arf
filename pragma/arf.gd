@@ -356,7 +356,7 @@ class WishGroup:
 		return self
 		
 	
-	func f(remain:float=0.9375) -> WishGroup:
+	func f(remain:float=0.25) -> WishGroup:
 		if nodes.size()>1:
 			var _nt1:float = nodes[-1].bartime
 			var _nt2:float = nodes[-2].bartime
@@ -588,15 +588,16 @@ func lp(bartime:float) -> WishGroup:
 	#var _delta:float = randf_range(60,180)
 	return dual(_x,_y,bartime,1.25,_degree,180)
 
-func runto(x:float,y:float,bartime:float,radius:float=1.25,degree:float=90) -> WishGroup:
-	var _t0:float = bartime-radius*DUAL_SCALE*0.0625
+const RUNTO_TYPE := 0
+func runto(x:float,y:float,bartime:float,degree:float=90,radius:float=4) -> WishGroup:
+	var _t0:float = bartime-radius*0.09375/_hispeed
 	if _t0<0:
 		_t0 = 0
-		radius = bartime*16/DUAL_SCALE
+		radius = bartime*16
 	degree = deg_to_rad(degree)
-	var a := Arf._w(x+radius*cos(degree),y+radius*sin(degree),_t0,DUAL_TYPE,0.01).n(x,y,bartime)
-	var b := Arf._w(x,y,_t0).n(x,y,bartime).try_interpolate(_t0+0.09375).h(bartime)
-	if DUAL_TYPE == 0: a.try_interpolate(_t0+0.09375).try_interpolate(bartime-0.000001)
+	var a := Arf._w(x+radius*cos(degree),y+radius*sin(degree),_t0,RUNTO_TYPE,0.01).n(x,y,bartime)
+	var b := Arf._w(x,y,_t0).n(x,y,bartime).try_interpolate(_t0+0.09375).f().h(bartime)
+	if RUNTO_TYPE == 0: a.try_interpolate(_t0+0.09375).try_interpolate(bartime-0.000001)
 	b._child.append(a)
 	return b
 func iw(x:float,y:float,bartime:float,radius:float=6,degree:float=90) -> WishGroup:
