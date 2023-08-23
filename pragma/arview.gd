@@ -240,7 +240,7 @@ static func ArCamera(nodes:Array=[], progress:int=-1, zindex:int=1) -> Array:
 static func refresh(arfroot:Node):
 	
 	ArView.clear_ArView()
-	if not Arfc.compiled: return ArView
+	if not Arfc.compiled: return
 	
 	var fm := Arfc.ArfResult.duplicate(true)
 	var traits:Dictionary = fm.Info.Traits
@@ -319,7 +319,6 @@ static func refresh(arfroot:Node):
 		(new_hint as CanvasItem).visible = false
 		Hgo[i] = new_hint
 		arfroot.add_child(new_hint)
-	return ArView
 
 static var last_culled:int = -1
 static var last_hgo:int = -1

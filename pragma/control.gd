@@ -24,9 +24,11 @@ var timet := [0,0]
 # Reloader
 func reload() -> void:
 	_arf.clear_Arf()
-	load(FMPATH).new().fumen()
+	#load(FMPATH).new().fumen()
+	ResourceLoader.load(FMPATH, "", ResourceLoader.CACHE_MODE_REPLACE).new().fumen()
 	Arfc.compile()
-	ArView.refresh(self).update(current_progress)
+	ArView.refresh(self)
+	ArView.update(current_progress)
 	if stream!=null:
 		audio_barl = Arfc.get_bartime(audio_length)
 		tempot[1] = audio_barl
