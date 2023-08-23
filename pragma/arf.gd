@@ -385,6 +385,7 @@ class WishGroup:
 				ng._childhints.append(newhint)
 				Arf.Hint.append(newhint)
 		Arf.Wish.append(ng)
+		ng.zindex = self.zindex
 		ng.wid = str(Arf.Wish.size())
 		if _child.size()>0:
 			print(_haschild % self.wid)
