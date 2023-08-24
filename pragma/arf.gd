@@ -542,7 +542,7 @@ func wid(id) -> WishGroup:
 # Fumen Stuff (Pattern Part)
 # Commonly, use w(),n(),h() only.
 const DUAL_TYPE := 0
-func dual(x:float,y:float,bartime:float,radius:float=2,degree:float=90,delta_degree:float=180) -> WishGroup:
+func dual(x:float,y:float,bartime:float,degree:float=90,delta_degree:float=180,radius:float=2) -> WishGroup:
 	var _t0:float = bartime - 0.375/_hispeed
 	if _t0 < 0:
 		_t0 = 0
@@ -556,7 +556,7 @@ func dual(x:float,y:float,bartime:float,radius:float=2,degree:float=90,delta_deg
 		b.try_interpolate(_t0+0.09375).try_interpolate(bartime-0.0001)
 	a._child.append(b)
 	return a
-func dual_without_hint(x:float,y:float,bartime:float,radius:float=2,degree:float=90,delta_degree:float=180) -> WishGroup:
+func dual_without_hint(x:float,y:float,bartime:float,degree:float=90,delta_degree:float=180,radius:float=2) -> WishGroup:
 	var _t0:float = bartime - 0.375/_hispeed
 	if _t0<0:
 		_t0 = 0
@@ -574,8 +574,8 @@ func pop(x:float,y:float,bartime:float,radius:float=2) -> WishGroup:
 	randomize()
 	var _degree:float = randf_range(0,360)
 	randomize()
-	var _delta:float = randf_range(60,180)
-	return dual(x,y,bartime,radius,_degree,_delta)
+	var _delta:float = randf_range(60,120)
+	return dual(x,y,bartime,_degree,_delta,radius)
 func lp(bartime:float) -> WishGroup:
 	randomize()
 	var _x:float = randf_range(3,13)
@@ -585,7 +585,7 @@ func lp(bartime:float) -> WishGroup:
 	var _degree:float = randf_range(0,360)
 	#randomize()
 	#var _delta:float = randf_range(60,180)
-	return dual(_x,_y,bartime,1.25,_degree,180)
+	return dual(_x,_y,bartime,_degree,180,2)
 
 const RUNTO_TYPE := 0
 func runto(x:float,y:float,bartime:float,degree:float=90,radius:float=4) -> WishGroup:
