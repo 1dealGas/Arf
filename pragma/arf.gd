@@ -50,10 +50,10 @@ class CamNode:
 	var easetype:int = 0
 	func _to_arr() -> Array:
 		return [Arfc.get_mstime(init_bartime),value,easetype]
-static func num(i:float) -> String:
-	return str(float("%.6f"%i))
-static func num2(i:float) -> float:
-	return float("%.2f"%i)
+static func num(i_:float) -> String:
+	return str(float("%.6f"%i_))
+static func num2(i_:float) -> float:
+	return float("%.2f"%i_)
 static func WishNodeSorter(a:WishNode,b:WishNode) -> bool:
 	assert(a.bartime!=b.bartime,ub%"Wish")
 	if a.bartime < b.bartime: return true
@@ -220,14 +220,10 @@ class WishGroup:
 			return _1st
 		else: return self
 	func mirror_lr() -> WishGroup:
-		var nodenum := nodes.size()
-		if nodenum==0: return self
-		else:
+		if nodes.size() != 0:
 			for node in nodes:
 				node.x = 16 - node.x
-		var chnum := _childhints.size()
-		if chnum==0: return self
-		else:
+		if _childhints.size() != 0:
 			for hint in _childhints:
 				hint.x = 16 - hint.x
 		if _child.size()>0:
@@ -236,14 +232,10 @@ class WishGroup:
 				child.mirror_lr()
 		return self
 	func mirror_ud() -> WishGroup:
-		var nodenum := nodes.size()
-		if nodenum==0: return self
-		else:
+		if nodes.size() != 0:
 			for node in nodes:
 				node.y = 8 - node.y
-		var chnum := _childhints.size()
-		if chnum==0: return self
-		else:
+		if _childhints.size() != 0:
 			for hint in _childhints:
 				hint.y = 8 - hint.y
 		if _child.size()>0:
@@ -251,7 +243,7 @@ class WishGroup:
 			for child in _child:
 				child.mirror_ud()
 		return self
-	func r(at:float,radius:float=6,degree:float=90) -> WishGroup:
+	func r(at:float,radius:float=6.637,degree:float=90) -> WishGroup:
 		var nodenum := nodes.size()
 		if nodenum<2: return self
 		assert(at>=0, notnegative%"Bartime" )
@@ -275,7 +267,7 @@ class WishGroup:
 		elif _at0>=nodes[-1].bartime:
 			_x0 = nodes[-1].x
 			_y0 = nodes[-1].y
-			_t0 = nodes[-1].easetype
+			_t0 = nodes[-2].easetype
 			has_at0 = true
 		else:
 			for i in range(0,nodenum-1):
@@ -291,8 +283,11 @@ class WishGroup:
 						_y0 = _y + dy*interpolate_ratio
 						has_at0 = true
 					else:
-						_x0 = _x + dx*Arf.EASE(interpolate_ratio,_t)
-						_y0 = _y + dy*Arf.EASE(interpolate_ratio,_t)
+						@warning_ignore("integer_division")
+						var _tx:int = _t/10
+						var _ty:int = _t%10
+						_x0 = _x + dx*Arf.EASE(interpolate_ratio,_tx)
+						_y0 = _y + dy*Arf.EASE(interpolate_ratio,_ty)
 						_t0 = _t
 						has_at0 = true
 		if at<=nodes[0].bartime:
@@ -317,9 +312,13 @@ class WishGroup:
 						_y1 = _y + dy*interpolate_ratio
 						has_at = true
 					else:
-						_x1 = _x + dx*Arf.EASE(interpolate_ratio,_t)
-						_y1 = _y + dy*Arf.EASE(interpolate_ratio,_t)
+						@warning_ignore("integer_division")
+						var _tx:int = _t/10
+						var _ty:int = _t%10
+						_x1 = _x + dx*Arf.EASE(interpolate_ratio,_tx)
+						_y1 = _y + dy*Arf.EASE(interpolate_ratio,_ty)
 						has_at = true
+					break
 		assert(has_at0 and has_at, "Failed to Insert a to-be-received Wish.")
 		if is_equal_approx(degree,0):
 			_x0 += radius
@@ -360,7 +359,8 @@ class WishGroup:
 		if nodes.size()>1:
 			var _nt1:float = nodes[-1].bartime
 			var _nt2:float = nodes[-2].bartime
-			if _nt1-_nt2 >= remain: return self.try_interpolate(_nt1-remain)
+			var _nt2t:int = nodes[-2].easetype
+			if _nt1-_nt2 >= remain and _nt2t==0 : return self.try_interpolate(_nt1-remain)
 			else: return self
 		else: return self
 	func _duplicate() -> WishGroup:
@@ -427,8 +427,8 @@ static func clear_Arf() -> void:
 	Wish.resize(0)
 	Hint.resize(0)
 	Z.resize(16)
-	for i in range(0,16):
-		Z[i] = {
+	for i_ in range(0,16):
+		Z[i_] = {
 			DTime = false,  #process_dtime(DTime:Array[float])
 			XScale = false,  #camnode_to_str(camnode:CamNode)
 			YScale = false,
@@ -450,10 +450,10 @@ func BPM(arr:Array[float]) -> void:
 	var arrsize := arr.size()
 	assert(arrsize>1 and arrsize%2==0, "Incorret BPMList format. Right: [bartime1,value1,bartime2,value2,···]")
 	assert(arr[0]==0, "The init bartime of the first BPM definition in BPMList must be 0.")
-	for i in range(2,arrsize,2):
-		assert(arr[i]>0, Positive%"Non-initial Bartime in BPMList")
-	for i in range(1,arrsize,2):
-		assert(arr[i]>0, Positive%"BPM")
+	for i_ in range(2,arrsize,2):
+		assert(arr[i_]>0, Positive%"Non-initial Bartime in BPMList")
+	for i_ in range(1,arrsize,2):
+		assert(arr[i_]>0, Positive%"BPM")
 	BPMList = arr
 
 func forz(z:int) -> void:
@@ -463,8 +463,8 @@ func DTime(arr:Array[float]) -> void:
 	var arrsize := arr.size()
 	assert(arrsize%2==0, "Incorret DTimeList format. Right: [bartime1,value1,bartime2,value2,···]")
 	if arrsize>1:
-		for i in range(0,arrsize,2):
-			assert(arr[i]>=0, notnegative%"Bartime")
+		for i_ in range(0,arrsize,2):
+			assert(arr[i_]>=0, notnegative%"Bartime")
 		Z[current_zindex-1].DTime = arr
 	else:
 		Z[current_zindex-1].DTime = false
@@ -517,7 +517,7 @@ func nw(z:int=-1,zdelta:float=0) -> WishGroup:
 	#Hint.append(nh)
 	#return nh
 
-func wid(id) -> WishGroup:
+func i(id) -> WishGroup:
 	if id is int:
 		assert(id>0 and id<=Wish.size())
 		return Wish[id-1]
@@ -558,12 +558,12 @@ func dual(x:float,y:float,bartime:float,degree:float=90,delta_degree:float=180,r
 	return a
 func dual_without_hint(x:float,y:float,bartime:float,degree:float=90,delta_degree:float=180,radius:float=2) -> WishGroup:
 	var _t0:float = bartime - 0.375/_hispeed
-	if _t0<0:
+	if _t0 < 0:
 		_t0 = 0
 		radius = 6*_hispeed*bartime/0.375
 	degree = deg_to_rad(degree)
 	delta_degree = degree + deg_to_rad(delta_degree)
-	var a := Arf._w(x+radius*cos(degree),y+radius*sin(degree),_t0,DUAL_TYPE,0.01).n(x,y,bartime).h(bartime)
+	var a := Arf._w(x+radius*cos(degree),y+radius*sin(degree),_t0,DUAL_TYPE,0.01).n(x,y,bartime)
 	var b := Arf._w(x+radius*cos(delta_degree),y+radius*sin(delta_degree),_t0,DUAL_TYPE).n(x,y,bartime)
 	if DUAL_TYPE == 0:
 		a.try_interpolate(_t0+0.09375).try_interpolate(bartime-0.0001)
