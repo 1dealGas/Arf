@@ -61,6 +61,7 @@ func fumen():
 		(i as WishGroup).copy(0,0,4)
 		(i as WishGroup).copy(0,0,6).mirror_lr()
 	
+	Hispeed(1)
 	var p3:=[
 		pop(11.5,5,9.25),
 		pop(14,6,9.75),
@@ -71,3 +72,10 @@ func fumen():
 		i.copy(0,0,2).mirror_lr()
 		i.copy(0.5,0,4).mirror_ud()
 		i.copy(0.5,0,6).mirror_lr().mirror_ud()
+
+	Hispeed(0.73)
+	wid(58).r(9.625)
+	wid(62).r(9.625+0.25)
+	wid(58).r(9.625+0.5)
+	wid(62).r(9.625+0.75)
+	wid(64).r(10.625)

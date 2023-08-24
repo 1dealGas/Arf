@@ -541,13 +541,12 @@ func wid(id) -> WishGroup:
 
 # Fumen Stuff (Pattern Part)
 # Commonly, use w(),n(),h() only.
-const DUAL_SCALE := 5.6
 const DUAL_TYPE := 0
-func dual(x:float,y:float,bartime:float,radius:float=1.25,degree:float=90,delta_degree:float=180) -> WishGroup:
-	var _t0:float = bartime-radius*DUAL_SCALE*0.0625
-	if _t0<0:
+func dual(x:float,y:float,bartime:float,radius:float=2,degree:float=90,delta_degree:float=180) -> WishGroup:
+	var _t0:float = bartime - 0.375/_hispeed
+	if _t0 < 0:
 		_t0 = 0
-		radius = bartime*16/DUAL_SCALE
+		radius = 6*_hispeed*bartime/0.375
 	degree = deg_to_rad(degree)
 	delta_degree = degree + deg_to_rad(delta_degree)
 	var a := Arf._w(x+radius*cos(degree),y+radius*sin(degree),_t0,DUAL_TYPE,0.01).n(x,y,bartime).h(bartime)
@@ -557,11 +556,11 @@ func dual(x:float,y:float,bartime:float,radius:float=1.25,degree:float=90,delta_
 		b.try_interpolate(_t0+0.09375).try_interpolate(bartime-0.000001)
 	a._child.append(b)
 	return a
-func dual_without_hint(x:float,y:float,bartime:float,radius:float=1.25,degree:float=90,delta_degree:float=180) -> WishGroup:
-	var _t0:float = bartime-radius*DUAL_SCALE*0.0625
+func dual_without_hint(x:float,y:float,bartime:float,radius:float=2,degree:float=90,delta_degree:float=180) -> WishGroup:
+	var _t0:float = bartime - 0.375/_hispeed
 	if _t0<0:
 		_t0 = 0
-		radius = bartime*16/DUAL_SCALE
+		radius = 6*_hispeed*bartime/0.375
 	degree = deg_to_rad(degree)
 	delta_degree = degree + deg_to_rad(delta_degree)
 	var a := Arf._w(x+radius*cos(degree),y+radius*sin(degree),_t0,DUAL_TYPE,0.01).n(x,y,bartime).h(bartime)
@@ -571,7 +570,7 @@ func dual_without_hint(x:float,y:float,bartime:float,radius:float=1.25,degree:fl
 		b.try_interpolate(_t0+0.09375).try_interpolate(bartime-0.000001)
 	a._child.append(b)
 	return a
-func pop(x:float,y:float,bartime:float,radius:float=1.25) -> WishGroup:
+func pop(x:float,y:float,bartime:float,radius:float=2) -> WishGroup:
 	randomize()
 	var _degree:float = randf_range(0,360)
 	randomize()
