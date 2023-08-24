@@ -434,8 +434,10 @@ static func export() -> void:
 		return
 
 	var exported:Dictionary = ArfResult.duplicate(true)
-	if exported.Index.Wish[-1].size()==0: (exported.Index.Wish as Array).pop_back()
-	if exported.Index.Hint[-1].size()==0: (exported.Index.Hint as Array).pop_back()
+	var _ew:Array = exported.Index.Wish
+	var _eh:Array = exported.Index.Hint
+	while _ew[-1].size()==0: (_ew as Array).pop_back()
+	while _eh[-1].size()==0: (_eh as Array).pop_back()
 	# Remove wid Signal
 	# use Arf.num(),size3(),size4() to convert all Numbers into String
 	for wgarray in exported.Wish:
