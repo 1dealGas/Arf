@@ -367,7 +367,7 @@ static func compile() -> void: #ArfResult doesn't contain custom objects.
 	var widx:Array[Array] = []
 	var hidx:Array[Array] = []
 	@warning_ignore("integer_division")
-	var idxsize = (int(timemax))/512 + 1
+	var idxsize = (int(timemax)+512)/512 + 1
 	widx.resize(idxsize)
 	hidx.resize(idxsize)
 	for i in range(0,idxsize):
@@ -434,6 +434,8 @@ static func export() -> void:
 		return
 
 	var exported:Dictionary = ArfResult.duplicate(true)
+	if exported.Index.Wish[-1].size()==0: (exported.Index.Wish as Array).pop_back()
+	if exported.Index.Hint[-1].size()==0: (exported.Index.Hint as Array).pop_back()
 	# Remove wid Signal
 	# use Arf.num(),size3(),size4() to convert all Numbers into String
 	for wgarray in exported.Wish:

@@ -552,6 +552,10 @@ static func update(progress:int) -> void:
 	if culled_index < last_culled:
 		for i in range(culled_index, last_culled):
 			Wgo[i].visible = false
+	#if culled_index==0:
+		#print_debug(Windex[current_index_group])
+		#for _x in Windex[current_index_group]:
+			#print_debug(Wish[_x-1])
 	last_culled = culled_index
 	var target:Array = []
 	var chid:int = 0

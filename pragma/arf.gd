@@ -552,8 +552,8 @@ func dual(x:float,y:float,bartime:float,radius:float=2,degree:float=90,delta_deg
 	var a := Arf._w(x+radius*cos(degree),y+radius*sin(degree),_t0,DUAL_TYPE,0.01).n(x,y,bartime).h(bartime)
 	var b := Arf._w(x+radius*cos(delta_degree),y+radius*sin(delta_degree),_t0,DUAL_TYPE).n(x,y,bartime)
 	if DUAL_TYPE == 0:
-		a.try_interpolate(_t0+0.09375).try_interpolate(bartime-0.000001)
-		b.try_interpolate(_t0+0.09375).try_interpolate(bartime-0.000001)
+		a.try_interpolate(_t0+0.09375).try_interpolate(bartime-0.0001)
+		b.try_interpolate(_t0+0.09375).try_interpolate(bartime-0.0001)
 	a._child.append(b)
 	return a
 func dual_without_hint(x:float,y:float,bartime:float,radius:float=2,degree:float=90,delta_degree:float=180) -> WishGroup:
@@ -566,8 +566,8 @@ func dual_without_hint(x:float,y:float,bartime:float,radius:float=2,degree:float
 	var a := Arf._w(x+radius*cos(degree),y+radius*sin(degree),_t0,DUAL_TYPE,0.01).n(x,y,bartime).h(bartime)
 	var b := Arf._w(x+radius*cos(delta_degree),y+radius*sin(delta_degree),_t0,DUAL_TYPE).n(x,y,bartime)
 	if DUAL_TYPE == 0:
-		a.try_interpolate(_t0+0.09375).try_interpolate(bartime-0.000001)
-		b.try_interpolate(_t0+0.09375).try_interpolate(bartime-0.000001)
+		a.try_interpolate(_t0+0.09375).try_interpolate(bartime-0.0001)
+		b.try_interpolate(_t0+0.09375).try_interpolate(bartime-0.0001)
 	a._child.append(b)
 	return a
 func pop(x:float,y:float,bartime:float,radius:float=2) -> WishGroup:
