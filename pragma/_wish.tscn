@@ -29,12 +29,15 @@ scale = Vector2(0.637, 0.637)
 texture = ExtResource("1_6ws33")
 
 [node name="WID" type="Label" parent="."]
-offset_left = -30.0
+offset_left = -5.0
 offset_top = -30.0
-offset_right = 30.0
+offset_right = 5.0
 offset_bottom = 30.0
 theme_override_colors/font_color = Color(0.286275, 0.286275, 0.286275, 1)
-theme_override_font_sizes/font_size = 24
-text = "1234"
+theme_override_constants/line_spacing = -10
+theme_override_font_sizes/font_size = 19
+text = "12 #34"
 horizontal_alignment = 1
 vertical_alignment = 1
+autowrap_mode = 2
+justification_flags = 0

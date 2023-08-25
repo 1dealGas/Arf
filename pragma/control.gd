@@ -1,4 +1,6 @@
 extends AudioStreamPlayer
+@export var show_line_id := true
+
 const FMPATH := "res://〈Fumen〉.gd"
 const TIMESTR := "%d · %d"
 const BTSTR := "%s · %s"
@@ -23,7 +25,7 @@ var timet := [0,0]
 
 # Reloader
 func reload() -> void:
-	_arf.clear_Arf()
+	_arf.clear_Arf(show_line_id)
 	#load(FMPATH).new().fumen()
 	ResourceLoader.load(FMPATH, "", ResourceLoader.CACHE_MODE_REPLACE).new().fumen()
 	Arfc.compile()
@@ -56,6 +58,7 @@ func _seek(prgms:float,prg_unknown:bool=true) -> void:
 
 # Init
 func _enter_tree() -> void:
+	print()
 	if stream==null:
 		stream = load("res://〈Audio〉.ogg")
 	if stream!= null:
@@ -65,7 +68,7 @@ func _enter_tree() -> void:
 		play()
 		stream_paused = true
 	else:
-		print("\nPlease Set the Audio Stream before Viewing Your Work.")
+		print("Please Set the Audio Stream before Viewing Your Work.")
 
 # File Listener
 func _physics_process(_delta:float) -> void:
@@ -73,7 +76,7 @@ func _physics_process(_delta:float) -> void:
 	if fmgd_current_update != fmgd_last_update and stream != null:
 		reload()
 		fmgd_last_update = fmgd_current_update
-		print("\n〈fumen〉.gd Updated in %s" % Time.get_time_string_from_system())
+		print("〈fumen〉.gd Updated in %s" % Time.get_time_string_from_system())
 
 # Updater
 var last_progress:float = -1

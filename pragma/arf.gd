@@ -16,17 +16,18 @@ static var Z:Array[Dictionary]  #Arrays related to ZIndex.
 
 # Base Stuff
 const str_zrange := "\"z\" must be an interger in [1,16]."
-const add_camnodes := "Please add CamNodes. Right: [t(init_time1,value1,easetype1),t(init_time2,value2,easetype2),···]"
+const add_camnodes := "Please add CamNodes. Right: [c(init_time1,value1,easetype1),c(init_time2,value2,easetype2),···]"
 const wish_not_exist := "This Wish doesn't exist in Bartime %.4f"
 const req := "At least 2 Nodes are required to generate a Hint."
 const ipnyi := "Non-linear Interpolation is not implemented yet. Node Bartime:%.4f WID:%s"
 const ub := "Inserting multiple %s Nodes with the same bartime will cause Undefined Behaviors."
 const Positive := "%s must be a positive value."
 const notnegative := "%s must be a non-negative value."
-const _haschild := "Wish(WID:%s) contains child Wish(es). Check whether there is a circular reference if any abnormality happens."
 
 static var current_zindex:int = 1
 static var _hispeed:float = 1
+static var _INVALID_WG := WishGroup.new()
+static var names:Dictionary = {}
 func Hispeed(hi:float) -> void:
 	_hispeed = clampf(hi,0.001,512000)
 
@@ -62,7 +63,7 @@ static func CamNodeSorter(a:CamNode,b:CamNode) -> bool:
 	assert(a.init_bartime!=b.init_bartime,Arf.ub%"Camera")
 	if a.init_bartime < b.init_bartime: return true
 	else: return false
-func t(Ninitbt:float, Nvalue:float, Neasetype:int=0) -> CamNode:
+func c(Ninitbt:float, Nvalue:float, Neasetype:int=0) -> CamNode:
 	var _t:= CamNode.new()
 	assert(Ninitbt>=0, notnegative%"Bartime")
 	assert(Neasetype>=0, notnegative%"EaseType")
@@ -70,7 +71,7 @@ func t(Ninitbt:float, Nvalue:float, Neasetype:int=0) -> CamNode:
 	_t.value = Nvalue
 	_t.easetype = Neasetype
 	return _t
-func c(base:int,numerator:int,denominator:int) -> float:
+func t(base:int,numerator:int,denominator:int) -> float:
 	assert(numerator<=denominator and denominator!=0)
 	return float(base)+float(numerator)/float(denominator)
 
@@ -203,18 +204,17 @@ class WishGroup:
 					if node.bartime>=0: _nodes.append(node)
 				nodes = _nodes
 		if _child.size()>0:
-			print(_haschild % self.wid)
 			for child in _child:
 				child.move(dx,dy,dbt,trim)
 		return self
 	func copy(dx:float,dy:float,dbt:float,number_of_times:int=1,trim:bool=true) -> WishGroup:
 		if number_of_times>0:
-			print("\nCopied the Wish below for %d time(s)." % number_of_times)
+			print("Copied the Wish below for %d time(s)." % number_of_times)
 			self.p()
 			print()
 			var _1st := self._duplicate().move(dx,dy,dbt,trim)
 			if number_of_times > 1:
-				print("Notice: Only the 1st copy result will be returned.")
+				print("Line %d: Only the 1st copy result will be returned." % get_stack()[1].line )
 				for i in range(2,number_of_times+1):
 					self._duplicate().move(i*dx,i*dy,i*dbt,trim)
 			return _1st
@@ -227,7 +227,6 @@ class WishGroup:
 			for hint in _childhints:
 				hint.x = 16 - hint.x
 		if _child.size()>0:
-			print(_haschild % self.wid)
 			for child in _child:
 				child.mirror_lr()
 		return self
@@ -239,11 +238,10 @@ class WishGroup:
 			for hint in _childhints:
 				hint.y = 8 - hint.y
 		if _child.size()>0:
-			print(_haschild % self.wid)
 			for child in _child:
 				child.mirror_ud()
 		return self
-	func r(at:float,radius:float=6.637,degree:float=90) -> WishGroup:
+	func r(at:float,radius:float=6.637,degree:float=90,nohint:bool=false) -> WishGroup:
 		var nodenum := nodes.size()
 		if nodenum<2: return self
 		assert(at>=0, notnegative%"Bartime" )
@@ -332,10 +330,13 @@ class WishGroup:
 			degree = deg_to_rad(degree)
 			_x0 += radius*cos( degree )
 			_y0 += radius*sin( degree )
-		var _new := Arf._w(_x0,_y0,_at0,_t0,0.05).n(_x1,_y1,at).h(at)
-		_child.append(_new)
+		var _new := Arf._w(_x0,_y0,_at0,_t0,0.05).n(_x1,_y1,at)
+		var _lineid := str( get_stack()[1].line )
+		if not nohint: _new.h(at)
+		_child.append(_new.tag(_lineid))
 		return self
 	func pivot(init_x:float,init_y:float,init_bt:float,at:float) -> WishGroup:
+		var _lineid := str( get_stack()[1].line )
 		assert(init_bt>=0 and at>=0, notnegative%"Bartime" )
 		assert(init_bt<at, "Initial Bartime must be smaller than the collision Bartime \"at\".")
 		var nodenum:int = nodes.size()
@@ -349,7 +350,7 @@ class WishGroup:
 				var interpolate_ratio := (at-nodes[i].bartime)/(nodes[i+1].bartime-nodes[i].bartime)
 				_x += dx*interpolate_ratio
 				_y += dy*interpolate_ratio
-				var _new := Arf._w(init_x,init_y,init_bt).n(_x,_y,at).h(at)
+				var _new := Arf._w(init_x,init_y,init_bt).n(_x,_y,at).h(at).tag(_lineid)
 				_child.append(_new)
 				return _new
 		return self
@@ -387,8 +388,8 @@ class WishGroup:
 		Arf.Wish.append(ng)
 		ng.zindex = self.zindex
 		ng.wid = str(Arf.Wish.size())
+		ng.tag("D")
 		if _child.size()>0:
-			print(_haschild % self.wid)
 			for child in _child:
 				ng._child.append(child._duplicate())
 		return ng
@@ -401,7 +402,7 @@ class WishGroup:
 		arr.append(self.wid)
 		return arr
 	func p() -> void:
-		var presult := pid%wid + pz%int(zindex)
+		var presult := pid%wid.get_slice(" #",0) + pz%int(zindex)
 		var nodenum := nodes.size()
 		if nodenum>0:
 			for i in range(0,nodenum-1):
@@ -411,14 +412,29 @@ class WishGroup:
 		else:
 			presult += pn
 			print(presult)
+	func name(NAME:String) -> WishGroup:
+		var _name:String = NAME.strip_edges()
+		if Arf.names.has(_name):
+			return self
+		else:
+			var _w:String = self.wid.strip_edges()
+			if Arf.names.has(_w): Arf.names.erase(_w)
+			self.wid = NAME
+			Arf.names[_name] = self
+			return self
+	func tag(TAG:String) -> WishGroup:
+		if not Arf._show_line_id: return self
+		if self._child.size() > 0:
+			for child in self._child:
+				child.tag("C")
+		return self.name(self.wid.get_slice(" ",0) + " #" + TAG)
 		
 
 
 
 # Fumen Stuff (Base Part)
-static func _static_init() -> void:
-	clear_Arf()
-static func clear_Arf() -> void:
+static var _show_line_id := true
+static func clear_Arf(s:bool) -> void:
 	_Offset = 0
 	_Madeby = "··|··  Arf User"
 	BPMList.resize(2)
@@ -438,6 +454,9 @@ static func clear_Arf() -> void:
 		}
 	current_zindex = 1
 	_hispeed = 1
+	_INVALID_WG = WishGroup.new()
+	names = {}
+	_show_line_id = s
 
 func Madeby(author:String) -> void:
 	assert(author.begins_with("·") or author.begins_with("|"), "Please Append the Tier Tag before the Author. Right:\"··|··  Arf User\"")
@@ -490,7 +509,8 @@ func YDelta(arr:Array[CamNode]) -> void:
 	Z[current_zindex-1].YDelta = arr
 
 func w(x:float,y:float,bartime:float,easetype:int=0,zdelta:float=0) -> WishGroup:
-	return Arf._w(x,y,bartime,easetype,zdelta)
+	var _lineid := str( get_stack()[1].line )
+	return Arf._w(x,y,bartime,easetype,zdelta).tag(_lineid)
 static func _w(x:float,y:float,bartime:float,easetype:int=0,zdelta:float=0) -> WishGroup:
 	assert(zdelta>=0 and zdelta<1, "Current ZIndex Overrided")
 	var _nw:=WishGroup.new()
@@ -501,11 +521,12 @@ static func _w(x:float,y:float,bartime:float,easetype:int=0,zdelta:float=0) -> W
 
 func nw(z:int=-1,zdelta:float=0) -> WishGroup:
 	var _nw:=WishGroup.new()
+	var _lineid := str( get_stack()[1].line )
 	if z==-1: _nw.zindex = current_zindex + zdelta
 	else: _nw.zindex = clampi(z,1,16) + zdelta
 	Wish.append(_nw)
 	_nw.wid = str(Wish.size())
-	return _nw
+	return _nw.tag(_lineid)
 # The manual method to generate Hints is deprecated.
 #static func h(Nx:float,Ny:float,Nbartime:float,z:int=-1) -> SingleHint:
 	#var nh:=SingleHint.new()
@@ -517,25 +538,19 @@ func nw(z:int=-1,zdelta:float=0) -> WishGroup:
 	#Hint.append(nh)
 	#return nh
 
-func i(id) -> WishGroup:
+func g(id) -> WishGroup:
 	if id is int:
 		assert(id>0 and id<=Wish.size())
 		return Wish[id-1]
 	elif id is String:
-		if id.is_valid_int():
-			id = id.to_int()
-			assert(id>0 and id<=Wish.size())
-			return Wish[id-1]
+		id = id.strip_edges()
+		if names.has(id): return names[id]
 		else:
-			for wishgroup in Arf.Wish:
-				if wishgroup.wid == id: return wishgroup
-			print("No WishGroup is tagged as WID %s . A new WishGroup will be created."%id)
-			var _n := nw()
-			_n.wid = id
-			return _n
+			print("Line %d : Attempting to Get a Nonexist WishGroup." % get_stack()[1].line )
+			return _INVALID_WG
 	else:
-		assert(false, "Invalid id Value.")
-		return null
+		print("Line %d : Attempting to Get a Nonexist WishGroup." % get_stack()[1].line )
+		return _INVALID_WG
 
 
 
@@ -544,13 +559,14 @@ func i(id) -> WishGroup:
 const DUAL_TYPE := 0
 func dual(x:float,y:float,bartime:float,degree:float=90,delta_degree:float=180,radius:float=2) -> WishGroup:
 	var _t0:float = bartime - 0.375/_hispeed
+	var _lineid := str( get_stack()[1].line )
 	if _t0 < 0:
 		_t0 = 0
 		radius = 6*_hispeed*bartime/0.375
 	degree = deg_to_rad(degree)
 	delta_degree = degree + deg_to_rad(delta_degree)
-	var a := Arf._w(x+radius*cos(degree),y+radius*sin(degree),_t0,DUAL_TYPE,0.01).n(x,y,bartime).h(bartime)
-	var b := Arf._w(x+radius*cos(delta_degree),y+radius*sin(delta_degree),_t0,DUAL_TYPE).n(x,y,bartime)
+	var a := Arf._w(x+radius*cos(degree),y+radius*sin(degree),_t0,DUAL_TYPE,0.01).n(x,y,bartime).h(bartime).tag(_lineid)
+	var b := Arf._w(x+radius*cos(delta_degree),y+radius*sin(delta_degree),_t0,DUAL_TYPE).n(x,y,bartime).tag(_lineid)
 	if DUAL_TYPE == 0:
 		a.try_interpolate(_t0+0.09375).try_interpolate(bartime-0.0001)
 		b.try_interpolate(_t0+0.09375).try_interpolate(bartime-0.0001)
@@ -558,25 +574,28 @@ func dual(x:float,y:float,bartime:float,degree:float=90,delta_degree:float=180,r
 	return a
 func dual_without_hint(x:float,y:float,bartime:float,degree:float=90,delta_degree:float=180,radius:float=2) -> WishGroup:
 	var _t0:float = bartime - 0.375/_hispeed
+	var _lineid := str( get_stack()[1].line )
 	if _t0 < 0:
 		_t0 = 0
 		radius = 6*_hispeed*bartime/0.375
 	degree = deg_to_rad(degree)
 	delta_degree = degree + deg_to_rad(delta_degree)
-	var a := Arf._w(x+radius*cos(degree),y+radius*sin(degree),_t0,DUAL_TYPE,0.01).n(x,y,bartime)
-	var b := Arf._w(x+radius*cos(delta_degree),y+radius*sin(delta_degree),_t0,DUAL_TYPE).n(x,y,bartime)
+	var a := Arf._w(x+radius*cos(degree),y+radius*sin(degree),_t0,DUAL_TYPE,0.01).n(x,y,bartime).tag(_lineid)
+	var b := Arf._w(x+radius*cos(delta_degree),y+radius*sin(delta_degree),_t0,DUAL_TYPE).n(x,y,bartime).tag(_lineid)
 	if DUAL_TYPE == 0:
 		a.try_interpolate(_t0+0.09375).try_interpolate(bartime-0.0001)
 		b.try_interpolate(_t0+0.09375).try_interpolate(bartime-0.0001)
 	a._child.append(b)
 	return a
 func pop(x:float,y:float,bartime:float,radius:float=2) -> WishGroup:
+	var _lineid := str( get_stack()[1].line )
 	randomize()
 	var _degree:float = randf_range(0,360)
 	randomize()
 	var _delta:float = randf_range(60,120)
-	return dual(x,y,bartime,_degree,_delta,radius)
+	return dual(x,y,bartime,_degree,_delta,radius).tag(_lineid)
 func lp(bartime:float) -> WishGroup:
+	var _lineid := str( get_stack()[1].line )
 	randomize()
 	var _x:float = randf_range(3,13)
 	randomize()
@@ -585,17 +604,18 @@ func lp(bartime:float) -> WishGroup:
 	var _degree:float = randf_range(0,360)
 	#randomize()
 	#var _delta:float = randf_range(60,180)
-	return dual(_x,_y,bartime,_degree,180,2)
+	return dual(_x,_y,bartime,_degree,180,2).tag(_lineid)
 
 const RUNTO_TYPE := 0
 func runto(x:float,y:float,bartime:float,degree:float=90,radius:float=4) -> WishGroup:
 	var _t0:float = bartime-radius*0.09375/_hispeed
+	var _lineid := str( get_stack()[1].line )
 	if _t0<0:
 		_t0 = 0
 		radius = bartime*16
 	degree = deg_to_rad(degree)
-	var a := Arf._w(x+radius*cos(degree),y+radius*sin(degree),_t0,RUNTO_TYPE,0.01).n(x,y,bartime)
-	var b := Arf._w(x,y,_t0).n(x,y,bartime).try_interpolate(_t0+0.09375).f().h(bartime)
+	var a := Arf._w(x+radius*cos(degree),y+radius*sin(degree),_t0,RUNTO_TYPE,0.01).n(x,y,bartime).tag(_lineid)
+	var b := Arf._w(x,y,_t0).n(x,y,bartime).try_interpolate(_t0+0.09375).f().h(bartime).tag(_lineid)
 	if RUNTO_TYPE == 0: a.try_interpolate(_t0+0.09375).try_interpolate(bartime-0.000001)
 	b._child.append(a)
 	return b
@@ -605,7 +625,7 @@ func iw(x:float,y:float,bartime:float,radius:float=6,degree:float=90) -> WishGro
 		_t0 = 0
 		radius = bartime*16
 	degree = deg_to_rad(degree)
-	var a := Arf._w(x+radius*cos(degree),y+radius*sin(degree),_t0,0,0.01).n(x,y,bartime)
+	var a := Arf._w(x+radius*cos(degree),y+radius*sin(degree),_t0,0,0.01).n(x,y,bartime).tag("C")
 	var b := Arf._w(x,y,_t0).n(x,y,bartime).h(bartime)
 	b._child.append(a)
 	return b

@@ -12,15 +12,23 @@ config_version=5
 
 config/name="Arf"
 run/main_scene="res://〈Arf〉.tscn"
+run/disable_stderr=true
 config/features=PackedStringArray("4.2", "GL Compatibility")
+run/flush_stdout_on_print.debug=false
 run/low_processor_mode=true
 boot_splash/show_image=false
 boot_splash/fullsize=false
 boot_splash/use_filter=false
 config/icon="res://include/wish.png"
 
+[audio]
+
+driver/driver=""
+
 [debug]
 
+file_logging/enable_file_logging.pc=false
+settings/gdscript/max_call_stack=512
 gdscript/warnings/static_called_on_instance=2
 
 [display]
@@ -30,6 +38,12 @@ window/size/viewport_height=1080
 window/size/always_on_top=true
 window/energy_saving/keep_screen_on=false
 window/stretch/mode="canvas_items"
+window/vsync/vsync_mode=0
+
+[filesystem]
+
+import/blender/enabled=false
+import/fbx/enabled=false
 
 [input]
 
@@ -63,8 +77,15 @@ scrolldown_50ms={
 [physics]
 
 common/physics_ticks_per_second=8
+common/enable_object_picking=false
 
 [rendering]
 
 renderer/rendering_method="gl_compatibility"
 renderer/rendering_method.mobile="gl_compatibility"
+driver/threads/thread_model=0
+shading/overrides/force_vertex_shading=true
+shading/overrides/force_lambert_over_burley=true
+textures/default_filters/use_nearest_mipmap_filter=true
+textures/default_filters/anisotropic_filtering_level=0
+vrs/mode=1
