@@ -105,6 +105,7 @@ const pr := "(%.4f,%.4f,%.4f)--<%02d>--"
 const pt := "(%.4f,%.4f,%.4f)"
 const pz := " in Z%d: "
 const pn := "No Node Included"
+static var cp:Array[int] = [0,0]
 class WishGroup:
 	
 	var _child:Array[WishGroup] = []
@@ -209,7 +210,9 @@ class WishGroup:
 		return self
 	func copy(dx:float,dy:float,dbt:float,number_of_times:int=1,trim:bool=true) -> WishGroup:
 		if number_of_times>0:
-			print("Copied the Wish below for %d time(s)." % number_of_times)
+			Arf.cp[0] = get_stack()[1].line
+			Arf.cp[1] = number_of_times
+			print("Line %d: Copied the Wish below for %d time(s)." % Arf.cp)
 			self.p()
 			print()
 			var _1st := self._duplicate().move(dx,dy,dbt,trim)
@@ -415,6 +418,8 @@ class WishGroup:
 	func name(NAME:String) -> WishGroup:
 		var _name:String = NAME.strip_edges()
 		if Arf.names.has(_name):
+			print("Line %d: Attempting to Shadow an existing Wish." % get_stack()[1].line )
+			Arf._g(_name).p()
 			return self
 		else:
 			var _w:String = self.wid.strip_edges()
@@ -538,7 +543,8 @@ func nw(z:int=-1,zdelta:float=0) -> WishGroup:
 	#Hint.append(nh)
 	#return nh
 
-func g(id) -> WishGroup:
+func g(id) -> WishGroup: return Arf._g(id)
+static func _g(id) -> WishGroup:
 	if id is int:
 		assert(id>0 and id<=Wish.size())
 		return Wish[id-1]
@@ -589,22 +595,22 @@ func dual_without_hint(x:float,y:float,bartime:float,degree:float=90,delta_degre
 	return a
 func pop(x:float,y:float,bartime:float,radius:float=2) -> WishGroup:
 	var _lineid := str( get_stack()[1].line )
-	randomize()
+	seed( int(x+y+bartime+radius) )
 	var _degree:float = randf_range(0,360)
-	randomize()
+	seed( int(x*y*bartime*radius) )
 	var _delta:float = randf_range(60,120)
 	return dual(x,y,bartime,_degree,_delta,radius).tag(_lineid)
 func lp(bartime:float) -> WishGroup:
 	var _lineid := str( get_stack()[1].line )
-	randomize()
+	seed( int(bartime*bartime) )
 	var _x:float = randf_range(3,13)
-	randomize()
+	seed( int(bartime+bartime) )
 	var _y:float = randf_range(1,7)
-	randomize()
+	seed( int(bartime*bartime+bartime) )
 	var _degree:float = randf_range(0,360)
-	#randomize()
-	#var _delta:float = randf_range(60,180)
-	return dual(_x,_y,bartime,_degree,180,2).tag(_lineid)
+	seed( int(bartime) )
+	var _delta:float = randf_range(60,180)
+	return dual(_x,_y,bartime,_degree,_delta,2).tag(_lineid)
 
 const RUNTO_TYPE := 0
 func runto(x:float,y:float,bartime:float,degree:float=90,radius:float=4) -> WishGroup:

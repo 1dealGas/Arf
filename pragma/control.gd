@@ -81,7 +81,8 @@ func _physics_process(_delta:float) -> void:
 # Updater
 var last_progress:float = -1
 func _process(_delta:float) -> void:
-	$FPS.text = _fps % Performance.get_monitor(Performance.TIME_FPS)
+	#$FPS.text = _fps % Performance.get_monitor(Performance.TIME_FPS)
+	$FPS.text = _fps % Engine.get_frames_per_second()
 	if stream!=null and not stream_paused:
 		@warning_ignore("narrowing_conversion")
 		current_progress = (get_playback_position() + AudioServer.get_time_since_last_mix() - AudioServer.get_output_latency()) * 1000
