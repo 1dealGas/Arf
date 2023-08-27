@@ -65,7 +65,14 @@ enum {
 	Partial_xLinear_yOutQuad = 5218304,
 	Partial_xLinear_yOutCirc = 6266880,
 	Partial_xLinear_yCosine = 7315456,
-	Partial_xOutQuad_yOutQuad = 8364032
+	Partial_xOutQuad_yOutQuad = 8364032,
+	Cam_Linear = 0,
+	Cam_InCirc = 1,
+	Cam_OutCirc = 2,
+	Cam_InQuad = 3,
+	Cam_OutQuad = 4,
+	Cam_InQuart = 5,
+	Cam_OutQuart = 6
 }
 
 const IPI:float = PI/2

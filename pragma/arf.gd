@@ -67,7 +67,7 @@ func c(Ninitbt:float, Nvalue:float, Neasetype:int=0) -> CamNode:
 	var _t:= CamNode.new()
 	assert(Ninitbt>=0, notnegative%"Bartime")
 	assert(Neasetype>=0, notnegative%"EaseType")
-	assert(Neasetype<1048576, "Partial EaseType is not implemented in Camera Nodes. Use Normal EaseType instead.")
+	assert(Neasetype<7, "EaseType of Camera Nodes must be ArEase.Cam_* .")
 	_t.init_bartime = Ninitbt
 	_t.value = Nvalue
 	_t.easetype = Neasetype
