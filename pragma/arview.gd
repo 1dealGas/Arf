@@ -129,7 +129,7 @@ static func ArCamera(nodes:Array=[], progress:int=-1, zindex:int=1) -> Array:
 							var dv:float = znt[poll_progress][1] - v0
 							var ratio:float = (progress-t0)/dt
 							if etype==0: xscale = v0 + dv*ratio
-							else: xscale = v0 + dv*Arf.EASE(ratio, etype)
+							else: xscale = v0 + dv*ArEase.EASE(ratio, etype)
 							type_interpolated = true
 							znt[0] = poll_progress
 						else: poll_progress +=1
@@ -152,7 +152,7 @@ static func ArCamera(nodes:Array=[], progress:int=-1, zindex:int=1) -> Array:
 							var dv:float = znt[poll_progress][1] - v0
 							var ratio:float = (progress-t0)/dt
 							if etype==0: yscale = v0 + dv*ratio
-							else: yscale = v0 + dv*Arf.EASE(ratio, etype)
+							else: yscale = v0 + dv*ArEase.EASE(ratio, etype)
 							type_interpolated = true
 							znt[0] = poll_progress
 						else: poll_progress +=1
@@ -175,7 +175,7 @@ static func ArCamera(nodes:Array=[], progress:int=-1, zindex:int=1) -> Array:
 							var dv:float = znt[poll_progress][1] - v0
 							var ratio:float = (progress-t0)/dt
 							if etype==0: rotrad = v0 + dv*ratio
-							else: rotrad = v0 + dv*Arf.EASE(ratio, etype)
+							else: rotrad = v0 + dv*ArEase.EASE(ratio, etype)
 							type_interpolated = true
 							znt[0] = poll_progress
 						else: poll_progress +=1
@@ -198,7 +198,7 @@ static func ArCamera(nodes:Array=[], progress:int=-1, zindex:int=1) -> Array:
 							var dv:float = znt[poll_progress][1] - v0
 							var ratio:float = (progress-t0)/dt
 							if etype==0: xdelta = v0 + dv*ratio
-							else: xdelta = v0 + dv*Arf.EASE(ratio, etype)
+							else: xdelta = v0 + dv*ArEase.EASE(ratio, etype)
 							type_interpolated = true
 							znt[0] = poll_progress
 						else: poll_progress +=1
@@ -221,7 +221,7 @@ static func ArCamera(nodes:Array=[], progress:int=-1, zindex:int=1) -> Array:
 							var dv:float = znt[poll_progress][1] - v0
 							var ratio:float = (progress-t0)/dt
 							if etype==0: ydelta = v0 + dv*ratio
-							else: ydelta = v0 + dv*Arf.EASE(ratio, etype)
+							else: ydelta = v0 + dv*ArEase.EASE(ratio, etype)
 							type_interpolated = true
 							znt[0] = poll_progress
 						else: poll_progress +=1
@@ -381,14 +381,18 @@ static func update(progress:int) -> void:
 									if current_type == 0:
 										current_interpolated.x = current_x0 + current_dx*interpolate_ratio
 										current_interpolated.y = current_y0 + current_dy*interpolate_ratio
+									elif current_type > 1048575:
+										var PE:Array[float] = ArEase.PartialEASE(interpolate_ratio,current_type)
+										current_interpolated.x = current_x0 + current_dx * PE[0]
+										current_interpolated.y = current_y0 + current_dy * PE[1]
 									else:
 										var typex:int = 0
 										var typey:int = 0
 										@warning_ignore("integer_division")
 										typex = current_type/10
 										typey = current_type%10
-										current_interpolated.x = current_x0 + current_dx*Arf.EASE(interpolate_ratio, typex)
-										current_interpolated.y = current_y0 + current_dy*Arf.EASE(interpolate_ratio, typey)
+										current_interpolated.x = current_x0 + current_dx*ArEase.EASE(interpolate_ratio, typex)
+										current_interpolated.y = current_y0 + current_dy*ArEase.EASE(interpolate_ratio, typey)
 									current_interpolated.z = current_wish[1]
 									current_wid = current_wish[-1]
 									if poll_progress == 3:
@@ -460,14 +464,18 @@ static func update(progress:int) -> void:
 							if current_type == 0:
 								current_interpolated.x = current_x0 + current_dx*interpolate_ratio
 								current_interpolated.y = current_y0 + current_dy*interpolate_ratio
+							elif current_type > 1048575:
+								var PE:Array[float] = ArEase.PartialEASE(interpolate_ratio,current_type)
+								current_interpolated.x = current_x0 + current_dx * PE[0]
+								current_interpolated.y = current_y0 + current_dy * PE[1]
 							else:
 								var typex:int = 0
 								var typey:int = 0
 								@warning_ignore("integer_division")
 								typex = current_type/10
 								typey = current_type%10
-								current_interpolated.x = current_x0 + current_dx*Arf.EASE(interpolate_ratio, typex)
-								current_interpolated.y = current_y0 + current_dy*Arf.EASE(interpolate_ratio, typey)
+								current_interpolated.x = current_x0 + current_dx*ArEase.EASE(interpolate_ratio, typex)
+								current_interpolated.y = current_y0 + current_dy*ArEase.EASE(interpolate_ratio, typey)
 							current_interpolated.z = current_wish[1]
 							current_wid = current_wish[-1]
 							if poll_progress == 3:

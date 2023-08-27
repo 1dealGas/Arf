@@ -67,6 +67,7 @@ func c(Ninitbt:float, Nvalue:float, Neasetype:int=0) -> CamNode:
 	var _t:= CamNode.new()
 	assert(Ninitbt>=0, notnegative%"Bartime")
 	assert(Neasetype>=0, notnegative%"EaseType")
+	assert(Neasetype<1048576, "Partial EaseType is not implemented in Camera Nodes. Use Normal EaseType instead.")
 	_t.init_bartime = Ninitbt
 	_t.value = Nvalue
 	_t.easetype = Neasetype
@@ -74,29 +75,6 @@ func c(Ninitbt:float, Nvalue:float, Neasetype:int=0) -> CamNode:
 func t(base:int,numerator:int,denominator:int) -> float:
 	assert(numerator<=denominator and denominator!=0)
 	return float(base)+float(numerator)/float(denominator)
-
-static var easecalc:float = 0
-static func EASE(ratio:float,type:int) -> float:
-	if type==1:
-		easecalc = sqrt( 1 - ratio*ratio )
-		return ( 1 - easecalc )
-	elif type==2:
-		easecalc = 1 - ratio
-		return sqrt( 1 - easecalc*easecalc )
-	elif type==3:
-		return ratio*ratio
-	elif type==4:
-		easecalc = 1 - ratio
-		return ( 1 - easecalc*easecalc )
-	elif type==5:
-		easecalc = ratio*ratio
-		return ( easecalc*easecalc )
-	elif type==6:
-		easecalc = 1 - ratio
-		return ( 1 - easecalc*easecalc )
-	else:
-		return ratio
-
 
 
 # Chain Stuff
@@ -152,17 +130,22 @@ class WishGroup:
 					var y0 := nodes[i].y
 					var dx := nodes[i+1].x - x0
 					var dy := nodes[i+1].y - y0
-					@warning_ignore("integer_division")
-					var ex := nodes[i].easetype/10
-					var ey := nodes[i].easetype%10
+					var et:int = nodes[i].easetype
 					var interpolate_ratio := (Nbartime-nodes[i].bartime)/(nodes[i+1].bartime-nodes[i].bartime)
 					var nh:=SingleHint.new()
-					if ex==0 and ey==0:
+					if et == 0:
 						nh.x = x0 + dx*interpolate_ratio
 						nh.y = y0 + dy*interpolate_ratio
+					elif et > 1048575:
+						var PE:Array[float] = ArEase.PartialEASE(interpolate_ratio,et)
+						nh.x = x0 + dx*PE[0]
+						nh.y = y0 + dy*PE[1]
 					else:
-						nh.x = x0 + dx*Arf.EASE(interpolate_ratio,ex)
-						nh.y = y0 + dy*Arf.EASE(interpolate_ratio,ey)
+						@warning_ignore("integer_division")
+						var ex := et/10
+						var ey := et%10
+						nh.x = x0 + dx*ArEase.EASE(interpolate_ratio,ex)
+						nh.y = y0 + dy*ArEase.EASE(interpolate_ratio,ey)
 					nh.bartime = Nbartime
 					nh.zindex = int(self.zindex)
 					self._childhints.append(nh)
@@ -283,12 +266,18 @@ class WishGroup:
 						_x0 = _x + dx*interpolate_ratio
 						_y0 = _y + dy*interpolate_ratio
 						has_at0 = true
+					elif _t > 1048575:
+						var PE:Array[float] = ArEase.PartialEASE(interpolate_ratio,_t)
+						_x0 = _x + dx * PE[0]
+						_y0 = _y + dy * PE[1]
+						_t0 = _t
+						has_at0 = true
 					else:
 						@warning_ignore("integer_division")
 						var _tx:int = _t/10
 						var _ty:int = _t%10
-						_x0 = _x + dx*Arf.EASE(interpolate_ratio,_tx)
-						_y0 = _y + dy*Arf.EASE(interpolate_ratio,_ty)
+						_x0 = _x + dx*ArEase.EASE(interpolate_ratio,_tx)
+						_y0 = _y + dy*ArEase.EASE(interpolate_ratio,_ty)
 						_t0 = _t
 						has_at0 = true
 		if at<=nodes[0].bartime:
@@ -312,12 +301,17 @@ class WishGroup:
 						_x1 = _x + dx*interpolate_ratio
 						_y1 = _y + dy*interpolate_ratio
 						has_at = true
+					elif _t > 1048575:
+						var PE:Array[float] = ArEase.PartialEASE(interpolate_ratio,_t)
+						_x1 = _x + dx * PE[0]
+						_y1 = _y + dy * PE[1]
+						has_at = true
 					else:
 						@warning_ignore("integer_division")
 						var _tx:int = _t/10
 						var _ty:int = _t%10
-						_x1 = _x + dx*Arf.EASE(interpolate_ratio,_tx)
-						_y1 = _y + dy*Arf.EASE(interpolate_ratio,_ty)
+						_x1 = _x + dx*ArEase.EASE(interpolate_ratio,_tx)
+						_y1 = _y + dy*ArEase.EASE(interpolate_ratio,_ty)
 						has_at = true
 					break
 		assert(has_at0 and has_at, "Failed to Insert a to-be-received Wish.")
@@ -625,13 +619,13 @@ func runto(x:float,y:float,bartime:float,degree:float=90,radius:float=4) -> Wish
 	if RUNTO_TYPE == 0: a.try_interpolate(_t0+0.09375).try_interpolate(bartime-0.000001)
 	b._child.append(a)
 	return b
-func iw(x:float,y:float,bartime:float,radius:float=6,degree:float=90) -> WishGroup:
+func iw(x:float,y:float,bartime:float,easetype:int=0,radius:float=6,degree:float=90) -> WishGroup:
 	var _t0:float = bartime-radius*0.0625/_hispeed
 	if _t0<0:
 		_t0 = 0
 		radius = bartime*16
 	degree = deg_to_rad(degree)
-	var a := Arf._w(x+radius*cos(degree),y+radius*sin(degree),_t0,0,0.01).n(x,y,bartime).tag("C")
+	var a := Arf._w(x+radius*cos(degree),y+radius*sin(degree),_t0,easetype,0.01).n(x,y,bartime).tag("C")
 	var b := Arf._w(x,y,_t0).n(x,y,bartime).h(bartime)
 	b._child.append(a)
 	return b

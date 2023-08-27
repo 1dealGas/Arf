@@ -192,7 +192,7 @@ static func get_dtime(ms:int,zindex:float) -> float:
 	else:
 		return ms
 
-static func detect_camera() -> bool:
+static func has_camera() -> bool:
 	var flag := false
 	var arfzi:Dictionary = {}
 	for i in range(0,16):
@@ -248,12 +248,12 @@ static func compile() -> void: #ArfResult doesn't contain custom objects.
 				if bnode.init_bartime>0:
 					wishgroup.try_interpolate(bnode.init_bartime)
 	# 2.do lots of _to_arr()
-	var _g:Array[Array] = []
+	var _grs:Array[Array] = []
 	_i = 0
-	_g.resize(Arf.Wish.size())
+	_grs.resize(Arf.Wish.size())
 	for wishgroup in Arf.Wish:
 		wishgroup.zindex = Arf.num2(wishgroup.zindex)  # deduce the zindex precision to help batching.
-		_g[_i] = wishgroup._to_arr()
+		_grs[_i] = wishgroup._to_arr()
 		_i += 1
 
 
@@ -276,7 +276,7 @@ static func compile() -> void: #ArfResult doesn't contain custom objects.
 		ArfResult.Info.Traits.DTime = _d
 		
 		_i = 0
-		for wgarray in _g:
+		for wgarray in _grs:
 			_i = wgarray[1]  # Now _i is the ZIndex of current WishGroupArray.
 			#for stuff in wgarray:
 				#if stuff is Array:
@@ -289,8 +289,8 @@ static func compile() -> void: #ArfResult doesn't contain custom objects.
 				if i>2: assert(wgarray[i][2] > wgarray[i-1][2], "Inserting WishNode in Flashback Part is Prohibited.")
 
 	# Sort ArfResult.Wish
-	_g.sort_custom(Arfc.WGArraySorter)
-	ArfResult.Wish = _g
+	_grs.sort_custom(Arfc.WGArraySorter)
+	ArfResult.Wish = _grs
 	
 	# Compile Info(Init,End,Traits.Camera)
 	var timemin:float = 512000
@@ -325,7 +325,7 @@ static func compile() -> void: #ArfResult doesn't contain custom objects.
 		ArfResult.Info.Init = 0
 	ArfResult.Info.End = int(timemax) + 512
 	
-	if detect_camera():
+	if has_camera():
 		var camall:Array = []
 		var camloc
 		camall.resize(16)

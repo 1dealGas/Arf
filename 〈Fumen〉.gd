@@ -1,21 +1,20 @@
 extends Arf
+
 func fumen():
 
 	Madeby("|·|·|  Inherited from Project Solace")
-
 	Offset(0)
 	BPM([
 		0,198
 	])
-
+	
 	forz(1)
 	Hispeed(0.73)
-	
 	var p1:=[
-		iw(5,1,1).n(5,1,1.375).n(3.75,1,2.8125+0.125,30).f(),
-		iw(3,1,1.125).n(3,1,1.375).n(2,1,2.875+0.125,30).f(),
-		iw(7,1,1.25).n(7,1,1.375).n(5.5,1,2.75+0.125,30).f(),
-		iw(9,1,1.375).n(7.25,1,2.6875+0.125,30).f()
+		iw(5,1,1).n(5,1,1.375).n(3.75,1,2.8125+0.125,ArEase.xInQuad_yLinear).f(),
+		iw(3,1,1.125).n(3,1,1.375).n(2,1,2.875+0.125,ArEase.xInQuad_yLinear).f(),
+		iw(7,1,1.25).n(7,1,1.375).n(5.5,1,2.75+0.125,ArEase.xInQuad_yLinear).f(),
+		iw(9,1,1.375).n(7.25,1,2.6875+0.125,ArEase.xInQuad_yLinear).f()
 	]
 	for x in p1:
 		(x as WishGroup).copy(0,0,2).mirror_lr()
@@ -51,10 +50,10 @@ func fumen():
 	g(13).r(8.75)
 
 	var p2:=[
-		iw(10,1,1).n(10,1,1.375).n(11.75,1,2.8125+0.125,30).f(),
-		iw(8,1,1.125).n(8,1,1.375).n(11,1,2.875+0.125,30).f(),
-		iw(12,1,1.25).n(12,1,1.375).n(12.5,1,2.75+0.125,30).f(),
-		iw(14,1,1.375).n(13.25,1,2.6875+0.125,30).f()
+		iw(10,1,1).n(10,1,1.375).n(11.75,1,2.8125+0.125,ArEase.xInQuad_yLinear).f(),
+		iw(8,1,1.125).n(8,1,1.375).n(11,1,2.875+0.125,ArEase.xInQuad_yLinear).f(),
+		iw(12,1,1.25).n(12,1,1.375).n(12.5,1,2.75+0.125,ArEase.xInQuad_yLinear).f(),
+		iw(14,1,1.375).n(13.25,1,2.6875+0.125,ArEase.xInQuad_yLinear).f()
 	]
 	for x in p2:
 		(x as WishGroup).move(0.75,0,8).mirror_lr()
