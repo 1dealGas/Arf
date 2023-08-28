@@ -72,7 +72,21 @@ enum {
 	Cam_InQuad = 3,
 	Cam_OutQuad = 4,
 	Cam_InQuart = 5,
-	Cam_OutQuart = 6
+	Cam_OutQuart = 6,
+	Custom_xInQuad = 1,
+	Custom_xInCirc = 2,
+	Custom_xSine = 3,
+	Custom_yInQuad = 4,
+	Custom_yInCirc = 5,
+	Custom_ySine = 6,
+	Custom_xyInQuad = 7,
+	Custom_xOutQuad = 8,
+	Custom_xOutCirc = 9,
+	Custom_xCosine = 10,
+	Custom_yOutQuad = 11,
+	Custom_yOutCirc = 12,
+	Custom_yCosine = 13,
+	Custom_xyOutQuad = 14
 }
 
 const IPI:float = PI/2
@@ -106,10 +120,6 @@ static func PartialEASE(ratio:float,type:int) -> Array[float]:
 	type = type >> 10
 	var ArIR:int = type & 0x3ff
 	type = type >> 10
-	ratio = clampf(ratio,0,1)
-	ArIR = clampi(ArIR,0,1000)
-	ArER = clampi(ArER,0,1000)
-	type = clampi(type,1,7)
 	
 	# Check for Reversed Status
 	var Reversed:bool = false
@@ -167,3 +177,65 @@ static func PartialEASE(ratio:float,type:int) -> Array[float]:
 	return PE
 
 static var decode_result:Array = [0,0,0,false]
+static func decode_ease(type:int) -> Array:
+	
+	# Decode type
+	var ArER:int = type & 0x3ff
+	type = type >> 10
+	var ArIR:int = type & 0x3ff
+	type = type >> 10
+	
+	# Check for Reversed Status
+	if ArIR > ArER:
+		ArIR = ArIR ^ ArER
+		ArER = ArIR ^ ArER
+		ArIR = ArIR ^ ArER
+		decode_result[3] = true
+	else: decode_result[3] = false
+	
+	decode_result[0] = type
+	decode_result[1] = ArIR / 1000.0
+	decode_result[2] = ArER / 1000.0
+	return decode_result
+
+# (E)ncode (C)ustom PartialEase
+static func ec(custom_type:int,init_ratio:float,end_ratio:float) -> int:
+	assert( custom_type>0 and custom_type<15, "custom_type must be ArEase.Custom_* ." )
+	custom_type = clampi(custom_type,1,14)
+	init_ratio = clampf(init_ratio,0,1)
+	end_ratio = clampf(end_ratio,0,1)
+	var ArIR:int = int( (init_ratio+0.0005)*1000 )
+	var ArER:int = int( (end_ratio+0.0005)*1000 )
+	if init_ratio > end_ratio:
+		print( "Line %d: Argument init_ratio is greater than Argument end_ratio. Arf swaped them implicitly." % get_stack()[1].line )
+		ArIR ^= ArER
+		ArER ^= ArIR
+		ArIR ^= ArER
+	if custom_type > 7:
+		custom_type -= 7
+		ArIR ^= ArER
+		ArER ^= ArIR
+		ArIR ^= ArER
+	return custom_type*1048576+ArIR*1024+ArER
+
+static func split_pe_former(stored_type:int,stored_ratio:float) -> int:
+	var dresult:Array = decode_ease(stored_type)
+	dresult[2] = dresult[1] + (dresult[2] - dresult[1]) * stored_ratio
+	if dresult[3]: return ec(dresult[0]+7, dresult[1], dresult[2])
+	else: return ec(dresult[0], dresult[1], dresult[2])
+	
+static func split_pe_latter(stored_type:int,stored_ratio:float) -> int:
+	var dresult:Array = decode_ease(stored_type)
+	dresult[1] = dresult[1] + (dresult[2] - dresult[1]) * stored_ratio
+	if dresult[3]: return ec(dresult[0]+7, dresult[1], dresult[2])
+	else: return ec(dresult[0], dresult[1], dresult[2])
+
+static func slice_pe(stored_type:int,stored_init:float,stored_end:float) -> int:
+	stored_init = clampf(stored_init,0,1)
+	stored_end = clampf(stored_end,0,1)
+	var dresult:Array = decode_ease(stored_type)
+	var delta:float = dresult[2] - dresult[1]
+	stored_init = dresult[1] + delta*stored_init
+	stored_end = dresult[1] + delta*stored_end
+	if dresult[3]: return ec(dresult[0]+7, stored_init, stored_end)
+	else: return ec(dresult[0], stored_init, stored_end)
