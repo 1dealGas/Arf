@@ -19,7 +19,7 @@ const str_zrange := "\"z\" must be an interger in [1,16]."
 const add_camnodes := "Please add CamNodes. Right: [c(init_time1,value1,easetype1),c(init_time2,value2,easetype2),···]"
 const wish_not_exist := "This Wish doesn't exist in Bartime %.4f"
 const req := "At least 2 Nodes are required to generate a Hint."
-const ipnyi := "Non-linear Interpolation is not implemented yet. Node Bartime:%.4f WID:%s"
+const ipnyi := "Line %d: Non-linear&Non-Partial Interpolation is not implemented yet."
 const ub := "Inserting multiple %s Nodes with the same bartime will cause Undefined Behaviors."
 const Positive := "%s must be a positive value."
 const notnegative := "%s must be a non-negative value."
@@ -159,15 +159,30 @@ class WishGroup:
 		else:
 			for i in range(0,nodenum-1):
 				if Nbartime>=nodes[i].bartime and Nbartime<nodes[i+1].bartime:
-					assert(nodes[i].easetype==0, ipnyi%[Nbartime,self.wid])
-					var _x := nodes[i].x
-					var _y := nodes[i].y
-					var dx := nodes[i+1].x - _x
-					var dy := nodes[i+1].y - _y
-					var interpolate_ratio := (Nbartime-nodes[i].bartime)/(nodes[i+1].bartime-nodes[i].bartime)
-					_x += dx*interpolate_ratio
-					_y += dy*interpolate_ratio
-					return self.n(_x,_y,Nbartime)
+					if nodes[i].easetype == 0 :
+						var _x := nodes[i].x
+						var _y := nodes[i].y
+						var dx := nodes[i+1].x - _x
+						var dy := nodes[i+1].y - _y
+						var interpolate_ratio := (Nbartime-nodes[i].bartime)/(nodes[i+1].bartime-nodes[i].bartime)
+						_x += dx*interpolate_ratio
+						_y += dy*interpolate_ratio
+						return self.n(_x,_y,Nbartime)
+					elif nodes[i].easetype > 1048575 :
+						var _x := nodes[i].x
+						var _y := nodes[i].y
+						var _et := nodes[i].easetype
+						var dx := nodes[i+1].x - _x
+						var dy := nodes[i+1].y - _y
+						var interpolate_ratio := (Nbartime-nodes[i].bartime)/(nodes[i+1].bartime-nodes[i].bartime)
+						var _t := ArEase.PartialEASE(interpolate_ratio, _et)
+						_x += dx * _t[0]
+						_y += dy * _t[1]
+						nodes[i].easetype = ArEase.split_pe_former(_et, interpolate_ratio)
+						return self.n( _x, _y, Nbartime, ArEase.split_pe_latter(_et, interpolate_ratio) )
+					else:
+						assert(false, ipnyi % get_stack()[1].line)
+						return self
 		return self
 	func move(dx:float,dy:float,dbt:float,trim:bool=true) -> WishGroup:
 		var nodenum := nodes.size()
@@ -200,7 +215,7 @@ class WishGroup:
 			print()
 			var _1st := self._duplicate().move(dx,dy,dbt,trim)
 			if number_of_times > 1:
-				print("Line %d: Only the 1st copy result will be returned." % get_stack()[1].line )
+				print("Line %d: Only the 1st copy result will be returned." % Arf.cp[0] )
 				for i in range(2,number_of_times+1):
 					self._duplicate().move(i*dx,i*dy,i*dbt,trim)
 			return _1st
