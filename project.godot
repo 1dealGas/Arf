@@ -16,6 +16,7 @@ run/disable_stderr=true
 config/features=PackedStringArray("4.2", "GL Compatibility")
 run/flush_stdout_on_print.debug=false
 run/low_processor_mode=true
+run/low_processor_mode_sleep_usec=6000
 boot_splash/show_image=false
 boot_splash/fullsize=false
 boot_splash/use_filter=false
