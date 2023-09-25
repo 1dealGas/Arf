@@ -339,6 +339,7 @@ static func update(progress:int) -> void:
 	if current_index_group < 0: current_index_group = 0
 	var ip_index:int = 0
 	var culled_index:int = 0
+	var _lastvec:Array[Dictionary] = [{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{}]
 	if DTime.size()>0:
 		var zip1:int = 1
 		for zi in range(0,16):
@@ -405,30 +406,28 @@ static func update(progress:int) -> void:
 								else: poll_progress += 1
 						if wish_interpolated:
 							if ip_index == 0:
-								Vecs[0].x = current_interpolated.x
-								Vecs[0].y = current_interpolated.y
+								var _x:float = current_interpolated.x
+								var _y:float = current_interpolated.y
+								Vecs[0].x = _x
+								Vecs[0].y = _y
 								Vecs[0].z = current_interpolated.z
 								Tints[0] = current_interpolated.w
 								Wids[0] = current_wid
+								_lastvec[zi][int(_x*101)+int(_y*103)] = 1
 								ip_index = 1
 							else:
-								var not_repeated := true
-								var dz:int = 0
-								for _i in range(0,ip_index+1):
-									dz = int(Vecs[_i].z) - int(current_interpolated.z)
-									if dz==0:
-										var dx:float = Vecs[_i].x - current_interpolated.x
-										var dy:float = Vecs[_i].y - current_interpolated.y
-										if dx<0.0001 and dy<0.0001 and dx>-0.0001 and dy>-0.0001:
-											Tints[_i] = 0
-											not_repeated = false
-											break
-								if not_repeated:
-									Vecs[ip_index].x = current_interpolated.x
-									Vecs[ip_index].y = current_interpolated.y
+								var _x:float = current_interpolated.x
+								var _y:float = current_interpolated.y
+								var _h:int = int(_x*101) + int(_y*103)
+								if _lastvec[zi].has(_h):
+									Tints[ _lastvec[zi][_h] ] = 0
+								else:
+									Vecs[ip_index].x = _x
+									Vecs[ip_index].y = _y
 									Vecs[ip_index].z = current_interpolated.z
 									Tints[ip_index] = current_interpolated.w
 									Wids[ip_index] = current_wid
+									_lastvec[zi][_h] = ip_index
 									ip_index += 1
 	else:
 		if (Windex.size() > current_index_group+1) and Windex[current_index_group].size() > 0:
@@ -492,30 +491,30 @@ static func update(progress:int) -> void:
 						else: poll_progress += 1
 				if wish_interpolated:
 					if ip_index == 0:
-						Vecs[0].x = current_interpolated.x
-						Vecs[0].y = current_interpolated.y
-						Vecs[0].z = current_interpolated.z
+						var _x:float = current_interpolated.x
+						var _y:float = current_interpolated.y
+						var _z:float = current_interpolated.z
+						Vecs[0].x = _x
+						Vecs[0].y = _y
+						Vecs[0].z = _z
 						Tints[0] = current_interpolated.w
 						Wids[0] = current_wid
+						_lastvec[int(_z)][int(_x*101)+int(_y*103)] = 1
 						ip_index = 1
 					else:
-						var not_repeated := true
-						var dz:int = 0
-						for _i in range(0,ip_index):
-							dz = int(Vecs[_i].z) - int(current_interpolated.z)
-							if dz==0:
-								var dx:float = Vecs[_i].x - current_interpolated.x
-								var dy:float = Vecs[_i].y - current_interpolated.y
-								if dx<0.0001 and dy<0.0001 and dx>-0.0001 and dy>-0.0001:
-									Tints[_i] = 0
-									not_repeated = false
-									break
-						if not_repeated:
-							Vecs[ip_index].x = current_interpolated.x
-							Vecs[ip_index].y = current_interpolated.y
-							Vecs[ip_index].z = current_interpolated.z
+						var _x:float = current_interpolated.x
+						var _y:float = current_interpolated.y
+						var _z:float = current_interpolated.z
+						var _h:int = int(_x*101) + int(_y*103)
+						if _lastvec[int(_z)].has(_h):
+							Tints[ _lastvec[int(_z)][_h] ] = 0
+						else:
+							Vecs[ip_index].x = _x
+							Vecs[ip_index].y = _y
+							Vecs[ip_index].z = _z
 							Tints[ip_index] = current_interpolated.w
 							Wids[ip_index] = current_wid
+							_lastvec[int(_z)][_h] = ip_index
 							ip_index += 1
 	for i in range(0,ip_index):
 		var pos:Vector3 = Vecs[i]
