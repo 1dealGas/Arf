@@ -396,10 +396,13 @@ static func update(progress:int) -> void:
 										current_interpolated.y = current_y0 + current_dy*ArEase.EASE(interpolate_ratio, typey)
 									current_interpolated.z = current_wish[1]
 									current_wid = current_wish[-1]
-									if poll_progress == 3:
-										if interpolate_ratio <= 0.237: current_interpolated.w = 2 + interpolate_ratio
-										else: current_interpolated.w = 0
-									elif poll_progress == current_wish_len-1 and interpolate_ratio >= 0.763:
+									if poll_progress == 3 and interpolate_ratio <= 0.237:
+									#	if interpolate_ratio <= 0.237:
+										current_interpolated.w = 2 + interpolate_ratio
+									#	else: current_interpolated.w = 0
+									#elif poll_progress == current_wish_len-1 and interpolate_ratio >= 0.763:
+									#	current_interpolated.w = 0
+									else:
 										current_interpolated.w = 0
 									wish_interpolated = true
 									current_wish[0] = poll_progress
@@ -477,13 +480,13 @@ static func update(progress:int) -> void:
 								current_interpolated.y = current_y0 + current_dy*ArEase.EASE(interpolate_ratio, typey)
 							current_interpolated.z = current_wish[1]
 							current_wid = current_wish[-1]
-							if poll_progress == 3:
-								if interpolate_ratio <= 0.237:
-									current_interpolated.w = 2 + interpolate_ratio
-								else:
-									current_interpolated.w = 0
-							elif poll_progress == current_wish_len-1 and interpolate_ratio >= 0.763:
-								current_interpolated.w = -2 - interpolate_ratio
+							if poll_progress == 3 and interpolate_ratio <= 0.237 :
+							#	if interpolate_ratio <= 0.237:
+								current_interpolated.w = 2 + interpolate_ratio
+							#	else:
+							#		current_interpolated.w = 0
+							#elif poll_progress == current_wish_len-1 and interpolate_ratio >= 0.763:
+							#	current_interpolated.w = -2 - interpolate_ratio
 							else:
 								current_interpolated.w = 0
 							wish_interpolated = true
@@ -549,10 +552,10 @@ static func update(progress:int) -> void:
 				tintw = 1 - tintw / 0.237
 				expand_wish = 1 + tintw*tintw/2
 				tintw = 1 - tintw*tintw*tintw
-			elif ctint <= -2:
-				tintw = 3 + ctint
-				tintw /= 0.237
-				tintw = tintw*tintw*tintw
+			#elif ctint <= -2:
+			#	tintw = 3 + ctint
+			#	tintw /= 0.237
+			#	tintw = tintw*tintw*tintw
 			currenthash_wish.ar_update(pos, tintw, expand_wish)
 			currenthash_wish.wid(Wids[i])
 			culled_index += 1

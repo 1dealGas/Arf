@@ -11,10 +11,10 @@ func fumen():
 	forz(1)
 	Hispeed(0.73)
 	var p1:=[
-		iw(5,1,1).n(5,1,1.375).n(3.75,1,2.8125+0.125,ArEase.xInQuad_yLinear).f(),
-		iw(3,1,1.125).n(3,1,1.375).n(2,1,2.875+0.125,ArEase.xInQuad_yLinear).f(),
-		iw(7,1,1.25).n(7,1,1.375).n(5.5,1,2.75+0.125,ArEase.xInQuad_yLinear).f(),
-		iw(9,1,1.375).n(7.25,1,2.6875+0.125,ArEase.xInQuad_yLinear).f()
+		iw(5,1,1).n(5,1,1.375).n(3.75,1,2.8125+0.125,ArEase.xInQuad_yLinear),
+		iw(3,1,1.125).n(3,1,1.375).n(2,1,2.875+0.125,ArEase.xInQuad_yLinear),
+		iw(7,1,1.25).n(7,1,1.375).n(5.5,1,2.75+0.125,ArEase.xInQuad_yLinear),
+		iw(9,1,1.375).n(7.25,1,2.6875+0.125,ArEase.xInQuad_yLinear)
 	]
 	for x in p1:
 		(x as WishGroup).copy(0,0,2).mirror_lr()
@@ -50,10 +50,10 @@ func fumen():
 	g(13).r(8.75)
 
 	var p2:=[
-		iw(10,1,1).n(10,1,1.375).n(11.75,1,2.8125+0.125,ArEase.xInQuad_yLinear).f(),
-		iw(8,1,1.125).n(8,1,1.375).n(11,1,2.875+0.125,ArEase.xInQuad_yLinear).f(),
-		iw(12,1,1.25).n(12,1,1.375).n(12.5,1,2.75+0.125,ArEase.xInQuad_yLinear).f(),
-		iw(14,1,1.375).n(13.25,1,2.6875+0.125,ArEase.xInQuad_yLinear).f()
+		iw(10,1,1).n(10,1,1.375).n(11.75,1,2.8125+0.125,ArEase.xInQuad_yLinear),
+		iw(8,1,1.125).n(8,1,1.375).n(11,1,2.875+0.125,ArEase.xInQuad_yLinear),
+		iw(12,1,1.25).n(12,1,1.375).n(12.5,1,2.75+0.125,ArEase.xInQuad_yLinear),
+		iw(14,1,1.375).n(13.25,1,2.6875+0.125,ArEase.xInQuad_yLinear)
 	]
 	for x in p2:
 		(x as WishGroup).move(0.75,0,8).mirror_lr()
@@ -115,11 +115,11 @@ func fumen():
 		(x as WishGroup).copy(0,0,8).mirror_lr()
 
 	var p4 := [
-		w(6,1,17,40).n(4,1,17.25).n(2,1,24.875).f(0.5),
-		w(7,1,17,40).n(6,1,17.25).n(5,1,24.875).f(0.5),
-		w(8,1,17,40).n(8,1,17.25).n(8,1,24.875).f(0.5),
-		w(9,1,17,40).n(10,1,17.25).n(11,1,24.875).f(0.5),
-		w(10,1,17,40).n(12,1,17.25).n(14,1,24.875).f(0.5)
+		w(6,1,17,40).n(4,1,17.25).n(2,1,24.875),
+		w(7,1,17,40).n(6,1,17.25).n(5,1,24.875),
+		w(8,1,17,40).n(8,1,17.25).n(8,1,24.875),
+		w(9,1,17,40).n(10,1,17.25).n(11,1,24.875),
+		w(10,1,17,40).n(12,1,17.25).n(14,1,24.875)
 	]
 	for x in p4: (x as WishGroup).copy(0,0,8)
 	dual(8,1,17.25,86.7,6.6,6).copy(0,0,0.5,15)

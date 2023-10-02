@@ -31,3 +31,85 @@ Product Features:
 - Included 2 Icons from **ByteDance IconPark** ([Website](https://iconpark.oceanengine.com/home) · [GitHub](https://github.com/bytedance/iconpark)), Licensed under the [Apache License 2.0](https://github.com/bytedance/IconPark/blob/master/LICENSE)
 
 - Interim Map Format Inspired from **aerials-writer** ([GitHub](https://github.com/Fuxfantx/aerials-writer) · [Initiator](https://github.com/zarmot))
+
+  
+
+---
+
+## API Reference
+
+Organized according to the steps to write an Aerials Map.
+
+  
+
+#### Song Config
+
+`Madeby(author:String)`
+
+--  Specify Author's name to be displayed, of this map.
+
+--  the AutherName should comply with one of the formats below, according to the map's difficulty (Assuming the Map is made by "ARFUSER"):
+
+`·····  ARFUSER`    `··|··  ARFUSER`    `·|·|·  ARFUSER`    `·|·|·  ARFUSER`
+
+`||·|| ARFUSER`    `||||| ARFUSER`    `||◇|| ARFUSER`
+
+  
+
+`Offset(ms:int)`
+
+--  Specify the ms position of `Bar 0` .
+
+--  Negative Offset Value is not recommended.
+
+  
+
+`BPM(arr:Array[float])`
+
+--  Specify Tempo information of the song with `BarTime` Value and `4/4 Beats Per Minute` Value, permuted in turn.
+
+--  Example:
+
+```gdscript
+func fumen():
+    BPM([
+        0, 185,        # In Bar0 - Bar16, the 4/4 BPM is 185
+        16, 370        # In Bar16 - The End Bar, the 4/4 BPM is 370
+    ])
+```
+
+  
+
+#### Z-Layer System Related
+
+`forz(z:int)`
+
+--  Specify the Z-Layer you work on.
+
+--  Z-Layer should be ranged in {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16}. By default, Arf works on the Z-Layer 1.
+
+--  Respective SV&Camera Rules are applied to `Wish`es and `Hint`s in respective Z-Layers.
+
+
+
+`DTime(arr:Array[float])`
+
+--  Specify the Speed Variation Rules for the current Z-Layer. SV Effects only affect the movement of `Wish`es, rather than `Hint`s.
+
+--  SV Rules extends to ALL `Wish`es in its respective Z-Layer.
+
+--  Example:
+
+```gdscript
+func fumen():
+    DTime([
+        0,1,    # In Bar0-Bar10, Wishes flow at a normal speed
+        10,2,   # In Bar10-Bar20, Wishes flow at a 2x speed
+        20,0.5  # In Bar20-Bar30, Wishes flow at a 0.5x speed
+        30,-1   # In B30-The End Bar, Wishes flow at a 1x speed reversely
+    ])
+```
+
+  
+
+#### To be continued. We love MOYU lol
