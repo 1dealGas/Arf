@@ -32,7 +32,7 @@ Product Features:
 
 - Interim Map Format Inspired from **aerials-writer** ([GitHub](https://github.com/Fuxfantx/aerials-writer) · [Initiator](https://github.com/zarmot))
 
-  
+---
 
 ---
 
@@ -40,29 +40,29 @@ Product Features:
 
 Organized according to the steps to write an Aerials Map.
 
-  
+---
 
-#### Song Config
+### Song Config
 
 `Madeby(author:String)`
 
---  Specify Author's name to be displayed, of this map.
+--  Specify Author's name to be displayed of this map.
 
---  the AutherName should comply with one of the formats below, according to the map's difficulty (Assuming the Map is made by "ARFUSER"):
+--  the AutherName should comply with one of the formats below, according to the map's difficulty (Assuming that the Map is made by "ARFUSER"):
 
 `·····  ARFUSER`    `··|··  ARFUSER`    `·|·|·  ARFUSER`    `·|·|·  ARFUSER`
 
-`||·|| ARFUSER`    `||||| ARFUSER`    `||◇|| ARFUSER`
+`||·||  ARFUSER`    `|||||  ARFUSER`    `||◇||  ARFUSER`
 
-  
+---
 
 `Offset(ms:int)`
 
 --  Specify the ms position of `Bar 0` .
 
---  Negative Offset Value is not recommended.
+--  **Negative Offset Value is not recommended**.
 
-  
+---
 
 `BPM(arr:Array[float])`
 
@@ -78,9 +78,9 @@ func fumen():
     ])
 ```
 
-  
+---
 
-#### Z-Layer System Related
+### Z-Layer System Related
 
 `forz(z:int)`
 
@@ -90,7 +90,7 @@ func fumen():
 
 --  Respective SV&Camera Rules are applied to `Wish`es and `Hint`s in respective Z-Layers.
 
-
+---
 
 `DTime(arr:Array[float])`
 
@@ -105,11 +105,48 @@ func fumen():
     DTime([
         0,1,    # In Bar0-Bar10, Wishes flow at a normal speed
         10,2,   # In Bar10-Bar20, Wishes flow at a 2x speed
-        20,0.5  # In Bar20-Bar30, Wishes flow at a 0.5x speed
+        20,0.5, # In Bar20-Bar30, Wishes flow at a 0.5x speed
         30,-1   # In B30-The End Bar, Wishes flow at a 1x speed reversely
     ])
 ```
 
-  
+--  You may nullify the SV Rule with the command `DTime([])` , rather than `DTime([0,1])` .
 
-#### To be continued. We love MOYU lol
+--  For SV Rules Array that doesn't begin at Bar 0, a default [0,1] line will be added automatically.
+
+---
+
+`XScale(arr:Array[CamNode])` `YScale(arr:Array[CamNode])` `Rotrad(arr:Array[CamNode])` `XDelta(arr:Array[CamNode])` `YDelta(arr:Array[CamNode])`
+
+--  Specify the Camera Variation Rules for the current Z-Layer. SV Effects only affect the movement of `Wish`es, rather than `Hint`s.
+
+--  Transformation Rrder of Aerials' Camera System is  **Zoom  ->  Rotate  ->  Translate** . For the rotation process, the pivot is the center of your screen, and the direction is counterclockwise.
+
+--  Recommended to Use the method `c(Ninitbt:float, Nvalue:float, Neasetype:int=0)` to create `CamNode` objects, rather than creating them manually.
+
+--  Example:
+
+```gdscript
+func fumen():
+    Rotrad([
+
+        # The rotation begins at Bar 15, with linear easing.
+        c(15,0,0),
+
+        # At Bar 50, the camera's been rotated by 180° counterclockwisely.
+        c(50,-pi,0)
+
+    ])
+```
+
+--  The default `Scale` Value is `1` (means 1.0x).  `0` for `Rotrad` & `Delta` Values.
+
+---
+
+### Easing System Related
+
+---
+
+### Manipulate Aerials' Basic Elements
+
+`w(x:float, y:float, bartime:float, easetype:int=0, zdelta:float=0)`

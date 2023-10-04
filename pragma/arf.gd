@@ -67,7 +67,7 @@ func c(Ninitbt:float, Nvalue:float, Neasetype:int=0) -> CamNode:
 	var _t:= CamNode.new()
 	assert(Ninitbt>=0, notnegative%"Bartime")
 	assert(Neasetype>=0, notnegative%"EaseType")
-	assert(Neasetype<7, "EaseType of Camera Nodes must be ArEase.Cam_* .")
+	assert(Neasetype<7, "EaseType of Camera Nodes must be ArEase.Cam_* or 0.")
 	_t.init_bartime = Ninitbt
 	_t.value = Nvalue
 	_t.easetype = Neasetype
@@ -488,51 +488,54 @@ func DTime(arr:Array[float]) -> void:
 	var arrsize := arr.size()
 	assert(arrsize%2==0, "Incorret DTimeList format. Right: [bartime1,value1,bartime2,value2,···]")
 	if arrsize>1:
-		for i_ in range(0,arrsize,2):
-			assert(arr[i_]>=0, notnegative%"Bartime")
+		for i_ in range(0,arrsize,2): assert(arr[i_]>=0, notnegative%"Bartime")
 		Z[current_zindex-1].DTime = arr
-	else:
-		Z[current_zindex-1].DTime = false
+	else: Z[current_zindex-1].DTime = false
 func XScale(arr:Array[CamNode]) -> void:
-	assert(arr.size()>0, add_camnodes)
-	arr.sort_custom(CamNodeSorter)
-	Z[current_zindex-1].XScale = arr
+	if arr.size()>0:
+		arr.sort_custom(CamNodeSorter)
+		Z[current_zindex-1].XScale = arr
+	else: Z[current_zindex-1].XScale = false
 func YScale(arr:Array[CamNode]) -> void:
-	assert(arr.size()>0, add_camnodes)
-	arr.sort_custom(CamNodeSorter)
-	Z[current_zindex-1].YScale = arr
+	if arr.size()>0:
+		arr.sort_custom(CamNodeSorter)
+		Z[current_zindex-1].YScale = arr
+	else: Z[current_zindex-1].YScale = false
 func Rotrad(arr:Array[CamNode]) -> void:
-	assert(arr.size()>0, add_camnodes)
-	arr.sort_custom(CamNodeSorter)
-	Z[current_zindex-1].Rotrad = arr
+	if arr.size()>0:
+		arr.sort_custom(CamNodeSorter)
+		Z[current_zindex-1].Rotrad = arr
+	else: Z[current_zindex-1].Rotrad = false
 func XDelta(arr:Array[CamNode]) -> void:
-	assert(arr.size()>0, add_camnodes)
-	arr.sort_custom(CamNodeSorter)
-	Z[current_zindex-1].XDelta = arr
+	if arr.size()>0:
+		arr.sort_custom(CamNodeSorter)
+		Z[current_zindex-1].XDelta = arr
+	else: Z[current_zindex-1].XDelta = false
 func YDelta(arr:Array[CamNode]) -> void:
-	assert(arr.size()>0, add_camnodes)
-	arr.sort_custom(CamNodeSorter)
-	Z[current_zindex-1].YDelta = arr
+	if arr.size()>0:
+		arr.sort_custom(CamNodeSorter)
+		Z[current_zindex-1].YDelta = arr
+	else: Z[current_zindex-1].YDelta = false
 
 func w(x:float,y:float,bartime:float,easetype:int=0,zdelta:float=0) -> WishGroup:
-	var _lineid := str( get_stack()[1].line )
-	return Arf._w(x,y,bartime,easetype,zdelta).tag(_lineid)
+	return Arf._w(x,y,bartime,easetype,zdelta).tag( str(get_stack()[1].line) )
 static func _w(x:float,y:float,bartime:float,easetype:int=0,zdelta:float=0) -> WishGroup:
 	assert(zdelta>=0 and zdelta<1, "Current ZIndex Overrided")
 	var _nw:=WishGroup.new()
 	_nw.zindex = current_zindex + zdelta
 	Wish.append(_nw)
 	_nw.wid = str(Wish.size())
-	return _nw.n(x,y,bartime,easetype)
+	return _nw.n(x,y,bartime,easetype).tag( str(get_stack()[2].line) )
 
-func nw(z:int=-1,zdelta:float=0) -> WishGroup:
-	var _nw:=WishGroup.new()
-	var _lineid := str( get_stack()[1].line )
-	if z==-1: _nw.zindex = current_zindex + zdelta
-	else: _nw.zindex = clampi(z,1,16) + zdelta
-	Wish.append(_nw)
-	_nw.wid = str(Wish.size())
-	return _nw.tag(_lineid)
+# The manual method to create Wishes is deprecated.
+#func nw(z:int=-1,zdelta:float=0) -> WishGroup:
+	#var _nw:=WishGroup.new()
+	#var _lineid := str( get_stack()[1].line )
+	#if z==-1: _nw.zindex = current_zindex + zdelta
+	#else: _nw.zindex = clampi(z,1,16) + zdelta
+	#Wish.append(_nw)
+	#_nw.wid = str(Wish.size())
+	#return _nw.tag(_lineid)
 # The manual method to generate Hints is deprecated.
 #static func h(Nx:float,Ny:float,Nbartime:float,z:int=-1) -> SingleHint:
 	#var nh:=SingleHint.new()
