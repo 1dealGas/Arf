@@ -80,7 +80,6 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = SubResource("GDScript_cm2iv")
-scale_ratio = 0.673
 
 [node name="Input" type="TextEdit" parent="."]
 unique_name_in_owner = true
