@@ -1,13 +1,18 @@
-[gd_scene load_steps=2 format=3 uid="uid://dnf6et2f4gvqj"]
+[gd_scene load_steps=2 format=3 uid="uid://bcox4l0k4scck"]
 
 [sub_resource type="GDScript" id="GDScript_cm2iv"]
 resource_name = "Script"
 script/source = "extends Control
+class_name iwl
 
 @export_range(5.0,7.0) var radius:float = 6.0
+@export_range(0.1,1.0) var scale_ratio:float = 1.0
 const RETURN:String = \"\\n\"
 const IW_DEFAULT:String = \"\\tiw(%s, 1, %s)\\n\"
 const IW_RADIUS:String = \"\\tiw(%s, 1, %s, 0, %s)\\n\"
+
+static var _sr:float = 1.0
+func _init(): _sr = scale_ratio
 
 class DRNote:
 	extends RefCounted
@@ -30,7 +35,7 @@ class DRNote:
 			16: type = 10
 			_: type = 0
 		bartime = iarr[2]
-		pos = iarr[3] + iarr[4] / 2.0
+		pos = 8 + (iarr[3] + iarr[4]/2.0 - 8) * iwl._sr
 
 func sorter(a:DRNote, b:DRNote) -> bool:
 	if a.bartime <= b.bartime:
@@ -47,6 +52,7 @@ func generate() -> void:
 
 	for i in range( lines.size() ):
 		if lines[i].begins_with(\"<\"):
+			
 			tmp = DRNote.new(lines[i])
 			var tmpkey:int = int(tmp.pos*1009) + int(tmp.bartime*100003)
 			if not has.has(tmpkey):
