@@ -11,9 +11,6 @@ const RETURN:String = \"\\n\"
 const IW_DEFAULT:String = \"\\tiw(%s, 1, %s)\\n\"
 const IW_RADIUS:String = \"\\tiw(%s, 1, %s, 0, %s)\\n\"
 
-static var _sr:float = 1.0
-func _init(): _sr = scale_ratio
-
 class DRNote:
 	extends RefCounted
 	var type:int
@@ -35,7 +32,7 @@ class DRNote:
 			16: type = 10
 			_: type = 0
 		bartime = iarr[2]
-		pos = 8 + (iarr[3] + iarr[4]/2.0 - 8) * iwl._sr
+		pos = iarr[3] + iarr[4] / 2.0
 
 func sorter(a:DRNote, b:DRNote) -> bool:
 	if a.bartime <= b.bartime:
@@ -54,6 +51,8 @@ func generate() -> void:
 		if lines[i].begins_with(\"<\"):
 			
 			tmp = DRNote.new(lines[i])
+			if scale_ratio != 1.0: tmp.pos = 8 + (tmp.pos - 8) * scale_ratio
+			
 			var tmpkey:int = int(tmp.pos*1009) + int(tmp.bartime*100003)
 			if not has.has(tmpkey):
 				has[tmpkey] = true
