@@ -58,7 +58,10 @@ func _seek(prgms:float,prg_unknown:bool=true) -> void:
 
 # Init
 func _enter_tree() -> void:
+	
 	print()
+	get_window().always_on_top = true
+	
 	if stream==null:
 		stream = load("res://〈Audio〉.ogg")
 	if stream!= null:
