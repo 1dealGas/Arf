@@ -416,12 +416,12 @@ static func update(progress:int) -> void:
 								Vecs[0].z = current_interpolated.z
 								Tints[0] = current_interpolated.w
 								Wids[0] = current_wid
-								_lastvec[zi][int(_x*101)+int(_y*103)] = 1
+								_lastvec[zi][int(_x*1009)+int(_y*1013)] = 1
 								ip_index = 1
 							else:
 								var _x:float = current_interpolated.x
 								var _y:float = current_interpolated.y
-								var _h:int = int(_x*101) + int(_y*103)
+								var _h:int = int(_x*1009) + int(_y*1013)
 								if _lastvec[zi].has(_h):
 									Tints[ _lastvec[zi][_h] ] = 0
 								else:
@@ -502,13 +502,13 @@ static func update(progress:int) -> void:
 						Vecs[0].z = _z
 						Tints[0] = current_interpolated.w
 						Wids[0] = current_wid
-						_lastvec[int(_z)][int(_x*101)+int(_y*103)] = 1
+						_lastvec[int(_z)][int(_x*1009)+int(_y*1013)] = 1
 						ip_index = 1
 					else:
 						var _x:float = current_interpolated.x
 						var _y:float = current_interpolated.y
 						var _z:float = current_interpolated.z
-						var _h:int = int(_x*101) + int(_y*103)
+						var _h:int = int(_x*1009) + int(_y*1013)
 						if _lastvec[int(_z)].has(_h):
 							Tints[ _lastvec[int(_z)][_h] ] = 0
 						else:
