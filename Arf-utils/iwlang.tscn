@@ -34,9 +34,11 @@ class DRNote:
 		pos = iarr[3] + iarr[4] / 2.0
 
 func sorter(a:DRNote, b:DRNote) -> bool:
-	if a.bartime <= b.bartime:
-		if a.pos <= b.pos: return true
-	return false
+	if a.bartime > b.bartime: return false
+	elif a.bartime == b. bartime:
+		if a.pos > b.pos: return false
+		return true
+	return true
 
 func generate() -> void:
 	var lines:PackedStringArray = $Input.text.split(RETURN)
