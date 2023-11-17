@@ -37,25 +37,31 @@ static func WGArraySorter(a:Array,b:Array) -> bool:
 	b3 = b[2]
 	assert( (a3 is Array and b3 is Array) and a3.size()==4 and b3.size()==4)
 	# [x,y,t,easetype]
-	if a3[2] <= b3[2]:
-		if a3[1] <= b3[1]:
-			if a3[0] <= b3[0]:
+	if a3[2] < b3[2]: return true
+	elif a3[2] > b3[2]: return false
+	else:
+		if a3[1] < b3[1]: return true
+		elif a3[1] > b3[1]: return false
+		else:
+			if a3[0] < b3[0]: return true
+			if a3[0] > b3[0]: return false
+			else:
 				assert(a[1] is float and b[1] is float)
 				if a[1] <= b[1]: return true
 				else: return false
-			else: return false
-		else: return false
-	else: return false
 static func HintSorter(a:SingleHint,b:SingleHint) -> bool:
 	assert( not(a.bartime==b.bartime and a.x==b.x and a.y==b.y and a.zindex==b.zindex and a.get_instance_id()!=b.get_instance_id()), "Completely Superposed Hints are Prohibited.")
-	if a.bartime < b.bartime:
-		if a.y <= b.y:
-			if a.x <= b.x:
+	if a.bartime < b.bartime: return true
+	elif a.bartime > b.bartime: return false
+	else:
+		if a.y < b.y: return true
+		elif a.y > b.y: return false
+		else:
+			if a.x < b.x: return true
+			elif a.x > b.x: return false
+			else:
 				if a.zindex <= b.zindex: return true
 				else: return false
-			else: return false
-		else: return false
-	else: return false
 
 
 
