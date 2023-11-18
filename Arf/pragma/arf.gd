@@ -429,7 +429,7 @@ class WishGroup:
 			Arf.names[_name] = self
 			return self
 	func tag(TAG:String) -> WishGroup:
-		if not Arf._show_line_id: return self
+		if not Arf._show_tags: return self
 		if self._child.size() > 0:
 			for child in self._child:
 				child.tag("C")
@@ -439,7 +439,7 @@ class WishGroup:
 
 
 # Fumen Stuff (Base Part)
-static var _show_line_id := true
+static var _show_tags := true
 static func clear_Arf(s:bool) -> void:
 	_Offset = 0
 	_Madeby = "··|··  Arf User"
@@ -462,7 +462,7 @@ static func clear_Arf(s:bool) -> void:
 	_hispeed = 1
 	_INVALID_WG = WishGroup.new()
 	names = {}
-	_show_line_id = s
+	_show_tags = s
 
 func Madeby(author:String) -> void:
 	assert(author.begins_with("·") or author.begins_with("|"), "Please Append the Tier Tag before the Author. Right:\"··|··  Arf User\"")

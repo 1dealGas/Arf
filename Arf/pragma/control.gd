@@ -1,5 +1,5 @@
 extends AudioStreamPlayer
-@export var show_line_id := true
+@export var show_tags := true
 
 const FMPATH := "res://〈Fumen〉.gd"
 const TIMESTR := "%d · %d"
@@ -25,7 +25,7 @@ var timet := [0,0]
 
 # Reloader
 func reload() -> void:
-	_arf.clear_Arf(show_line_id)
+	_arf.clear_Arf(show_tags)
 	#load(FMPATH).new().fumen()
 	ResourceLoader.load(FMPATH, "", ResourceLoader.CACHE_MODE_REPLACE).new().fumen()
 	Arfc.compile()
