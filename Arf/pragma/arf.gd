@@ -572,14 +572,15 @@ func dual(x:float,y:float,bartime:float,degree:float=90,delta_degree:float=180,r
 	var _lineid := str( get_stack()[1].line )
 	if _t0 < 0:
 		_t0 = 0
-		radius = 6*_hispeed*bartime/0.375
+		#radius = 6*_hispeed*bartime/0.375
+		radius *= bartime * _hispeed / 0.375
 	degree = deg_to_rad(degree)
 	delta_degree = degree + deg_to_rad(delta_degree)
 	var a := Arf._w(x+radius*cos(degree),y+radius*sin(degree),_t0,DUAL_TYPE,0.01).n(x,y,bartime).h(bartime).tag(_lineid)
 	var b := Arf._w(x+radius*cos(delta_degree),y+radius*sin(delta_degree),_t0,DUAL_TYPE).n(x,y,bartime).tag(_lineid)
-	if DUAL_TYPE == 0:
-		a.try_interpolate(_t0+0.09375).try_interpolate(bartime-0.0001)
-		b.try_interpolate(_t0+0.09375).try_interpolate(bartime-0.0001)
+	#if DUAL_TYPE == 0:
+		#a.try_interpolate(_t0+0.09375).try_interpolate(bartime-0.0001)
+		#b.try_interpolate(_t0+0.09375).try_interpolate(bartime-0.0001)
 	a._child.append(b)
 	return a
 func dual_without_hint(x:float,y:float,bartime:float,degree:float=90,delta_degree:float=180,radius:float=2) -> WishGroup:
@@ -587,14 +588,15 @@ func dual_without_hint(x:float,y:float,bartime:float,degree:float=90,delta_degre
 	var _lineid := str( get_stack()[1].line )
 	if _t0 < 0:
 		_t0 = 0
-		radius = 6*_hispeed*bartime/0.375
+		#radius = 6*_hispeed*bartime/0.375
+		radius *= bartime * _hispeed / 0.375
 	degree = deg_to_rad(degree)
 	delta_degree = degree + deg_to_rad(delta_degree)
 	var a := Arf._w(x+radius*cos(degree),y+radius*sin(degree),_t0,DUAL_TYPE,0.01).n(x,y,bartime).tag(_lineid)
 	var b := Arf._w(x+radius*cos(delta_degree),y+radius*sin(delta_degree),_t0,DUAL_TYPE).n(x,y,bartime).tag(_lineid)
-	if DUAL_TYPE == 0:
-		a.try_interpolate(_t0+0.09375).try_interpolate(bartime-0.0001)
-		b.try_interpolate(_t0+0.09375).try_interpolate(bartime-0.0001)
+	#if DUAL_TYPE == 0:
+		#a.try_interpolate(_t0+0.09375).try_interpolate(bartime-0.0001)
+		#b.try_interpolate(_t0+0.09375).try_interpolate(bartime-0.0001)
 	a._child.append(b)
 	return a
 func pop(x:float,y:float,bartime:float,radius:float=2) -> WishGroup:
@@ -629,11 +631,11 @@ func runto(x:float,y:float,bartime:float,degree:float=90,radius:float=4) -> Wish
 	if RUNTO_TYPE == 0: a.try_interpolate(_t0+0.09375).try_interpolate(bartime-0.000001)
 	b._child.append(a)
 	return b
-func iw(x:float,y:float,bartime:float,easetype:int=0,radius:float=6,degree:float=90) -> WishGroup:
-	var _t0:float = bartime-radius*0.0625/_hispeed
+func iw(x:float,y:float,bartime:float,easetype:int=0,radius:float=6.37,degree:float=90) -> WishGroup:
+	var _t0:float = bartime - radius*0.0625/_hispeed
 	if _t0<0:
 		_t0 = 0
-		radius = bartime*16
+		radius = bartime * _hispeed / 16
 	degree = deg_to_rad(degree)
 	var a := Arf._w(x+radius*cos(degree),y+radius*sin(degree),_t0,easetype,0.01).n(x,y,bartime).tag("C")
 	var b := Arf._w(x,y,_t0).n(x,y,bartime).h(bartime)
