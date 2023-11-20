@@ -6,6 +6,8 @@ script/source = "extends Control
 
 @export_range(5.0,7.0) var radius:float = 6.0
 @export_range(0.1,1.0) var scale_ratio:float = 1.0
+@export var pos_first_sort:bool = true
+
 const RETURN:String = \"\\n\"
 const IW_DEFAULT:String = \"\\tiw(%s, 1, %s)\\n\"
 const IW_RADIUS:String = \"\\tiw(%s, 1, %s, 0, %s)\\n\"
@@ -35,8 +37,15 @@ class DRNote:
 
 func sorter(a:DRNote, b:DRNote) -> bool:
 	if a.bartime > b.bartime: return false
-	elif a.bartime == b. bartime:
+	elif a.bartime == b.bartime:
 		if a.pos > b.pos: return false
+		return true
+	return true
+
+func p1sorter(a:DRNote, b:DRNote) -> bool:
+	if a.pos > b.pos: return false
+	elif a.pos == b.pos:
+		if a.bartime > b.bartime: return false
 		return true
 	return true
 
@@ -61,12 +70,12 @@ func generate() -> void:
 	
 	if radius == 6.0:
 		for ob in objs:
-			ob.sort_custom(sorter)
+			ob.sort_custom( p1sorter if pos_first_sort else sorter )
 			for o in ob: result += IW_DEFAULT % [o.pos, o.bartime]
 			result += RETURN
 	else:
 		for ob in objs:
-			ob.sort_custom(sorter)
+			ob.sort_custom( p1sorter if pos_first_sort else sorter )
 			for o in ob: result += IW_DEFAULT % [o.pos, o.bartime, radius]
 			result += RETURN
 	
