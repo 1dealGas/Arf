@@ -425,6 +425,7 @@ static func compile() -> void: #ArfResult doesn't contain custom objects.
 	compiled = true
 
 const path := "user://export.ar"
+const path2 := "user://export.json"
 const luahead := "local t,v,e,_=vmath.vector3,vmath.vector4,{}\nreturn "
 static func size3(arr:Array) -> String:
 	assert(arr.size()==3)
@@ -446,14 +447,22 @@ static func export() -> void:
 	while _eh[-1].size()==0: (_eh as Array).pop_back()
 	# Remove wid Signal
 	# use Arf.num(),size3(),size4() to convert all Numbers into String
+	exported.Info.Init = Arf.num(exported.Info.Init)
+	exported.Info.End = Arf.num(exported.Info.End)
+	for wgarray in exported.Wish: (wgarray as Array).pop_back()
+		
+	# Update: export the original JSON.
+	var exported_str := JSON.stringify(exported,"",false,false)
+	var _file := FileAccess.open(path2, FileAccess.WRITE_READ)
+	_file.store_string(exported_str)
+	_file.close()
+	_file = null
+		
 	for wgarray in exported.Wish:
-		(wgarray as Array).pop_back()
 		assert((wgarray as Array).size()>2)
 		wgarray[1] = Arf.num(wgarray[1])
 		for i in range(2,(wgarray as Array).size()):
 			wgarray[i] = Arfc.size4(wgarray[i])
-	exported.Info.Init = Arf.num(exported.Info.Init)
-	exported.Info.End = Arf.num(exported.Info.End)
 	if "DTime" in exported.Info.Traits:
 		var _dt_ = exported.Info.Traits.DTime
 		for stuff in _dt_:
@@ -472,9 +481,8 @@ static func export() -> void:
 	for i in range(0,(_hint_ as Array).size()):
 		_hint_[i] = Arfc.size4(_hint_[i])
 
-	# Get a JSON String
-	var exported_str := JSON.stringify(exported,"",false,false)
-	# Reformat JSON String
+	# Get the JSON String for Reformating
+	exported_str = JSON.stringify(exported,"",false,false)
 	exported_str = exported_str.replace("[","{")
 	exported_str = exported_str.replace("]","}")
 	exported_str = exported_str.replace(":","=")
@@ -483,11 +491,13 @@ static func export() -> void:
 	exported_str = exported_str.replace("false","_")
 	exported_str = exported_str.replace("Arf","\"Arf\"")
 	exported_str = exported_str.replace(Arf._Madeby, "\""+Arf._Madeby+"\"")
+	
 	# Save the Result in a file
-	var _file := FileAccess.open(path, FileAccess.WRITE_READ)
+	_file = FileAccess.open(path, FileAccess.WRITE_READ)
 	_file.store_string(luahead + exported_str)
 	_file.close()
 	_file = null
+	
 	var _glb := ProjectSettings.globalize_path(path)
 	print("Arf from fumen.gd is exported to %s" % _glb)
 	OS.shell_show_in_file_manager(_glb)
