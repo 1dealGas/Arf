@@ -1,0 +1,93 @@
+[gd_scene load_steps=3 format=3 uid="uid://d4b2bfehxx0fl"]
+
+[ext_resource type="Texture2D" uid="uid://clwyf3sud4hpi" path="res://Required/background.png" id="1_kadu6"]
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_02om2"]
+texture = ExtResource("1_kadu6")
+axis_stretch_horizontal = 2
+axis_stretch_vertical = 2
+
+[node name="Control" type="Control"]
+z_index = 10
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Pivots" type="Panel" parent="."]
+z_as_relative = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+focus_mode = 1
+theme_override_styles/panel = SubResource("StyleBoxTexture_02om2")
+
+[node name="Load" type="LineEdit" parent="."]
+custom_minimum_size = Vector2(200, 54)
+layout_mode = 0
+offset_left = 24.0
+offset_top = 998.0
+offset_right = 224.0
+offset_bottom = 1052.0
+theme_override_font_sizes/font_size = 27
+placeholder_text = "Load"
+alignment = 1
+
+[node name="Jump" type="LineEdit" parent="."]
+custom_minimum_size = Vector2(200, 54)
+layout_mode = 0
+offset_left = 248.0
+offset_top = 998.0
+offset_right = 448.0
+offset_bottom = 1052.0
+theme_override_font_sizes/font_size = 27
+placeholder_text = "Jump"
+alignment = 1
+
+[node name="Export" type="Button" parent="."]
+custom_minimum_size = Vector2(200, 54)
+layout_mode = 0
+offset_left = 1350.0
+offset_top = 998.0
+offset_right = 1550.0
+offset_bottom = 1052.0
+theme_override_colors/font_color = Color(0.596078, 0.596078, 0.596078, 1)
+theme_override_colors/font_pressed_color = Color(0.596078, 0.596078, 0.596078, 1)
+theme_override_colors/font_hover_color = Color(0.596078, 0.596078, 0.596078, 1)
+theme_override_colors/font_focus_color = Color(0.596078, 0.596078, 0.596078, 1)
+theme_override_colors/font_hover_pressed_color = Color(0.596078, 0.596078, 0.596078, 1)
+theme_override_colors/font_disabled_color = Color(0.596078, 0.596078, 0.596078, 1)
+theme_override_colors/font_outline_color = Color(0.596078, 0.596078, 0.596078, 1)
+theme_override_font_sizes/font_size = 27
+text = "Export"
+
+[node name="Switch" type="Button" parent="."]
+custom_minimum_size = Vector2(200, 54)
+offset_left = 1574.0
+offset_top = 998.0
+offset_right = 1774.0
+offset_bottom = 1052.0
+theme_override_colors/font_color = Color(0.596078, 0.596078, 0.596078, 1)
+theme_override_colors/font_pressed_color = Color(0.596078, 0.596078, 0.596078, 1)
+theme_override_colors/font_hover_color = Color(0.596078, 0.596078, 0.596078, 1)
+theme_override_colors/font_focus_color = Color(0.596078, 0.596078, 0.596078, 1)
+theme_override_colors/font_hover_pressed_color = Color(0.596078, 0.596078, 0.596078, 1)
+theme_override_colors/font_disabled_color = Color(0.596078, 0.596078, 0.596078, 1)
+theme_override_colors/font_outline_color = Color(0.596078, 0.596078, 0.596078, 1)
+theme_override_font_sizes/font_size = 27
+text = "Play"
+
+[node name="Info" type="Label" parent="."]
+custom_minimum_size = Vector2(1000, 100)
+layout_mode = 0
+offset_left = 37.0
+offset_top = 37.0
+offset_right = 1037.0
+offset_bottom = 137.0
+theme_override_font_sizes/font_size = 27
+text = "◇  Arf"
