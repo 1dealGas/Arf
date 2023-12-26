@@ -1,0 +1,60 @@
+; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
+
+config_version=5
+
+[application]
+
+config/name="Arf"
+run/main_scene="res://Required/control.tscn"
+run/disable_stderr=true
+config/features=PackedStringArray("4.3", "GL Compatibility")
+run/flush_stdout_on_print.debug=false
+run/low_processor_mode=true
+boot_splash/show_image=false
+boot_splash/fullsize=false
+boot_splash/use_filter=false
+config/icon="res://Required/wish.png"
+
+[audio]
+
+driver/driver=""
+
+[debug]
+
+file_logging/enable_file_logging.pc=false
+settings/gdscript/max_call_stack=512
+
+[display]
+
+window/size/viewport_width=1800
+window/size/viewport_height=1080
+window/size/window_width_override=1350
+window/size/window_height_override=810
+window/energy_saving/keep_screen_on=false
+window/stretch/mode="canvas_items"
+
+[filesystem]
+
+import/blender/enabled=false
+import/fbx/enabled=false
+
+[physics]
+
+common/physics_ticks_per_second=8
+common/enable_object_picking=false
+
+[rendering]
+
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"
+shading/overrides/force_vertex_shading=true
+shading/overrides/force_lambert_over_burley=true
+textures/default_filters/use_nearest_mipmap_filter=true
+textures/default_filters/anisotropic_filtering_level=0
+vrs/mode=1
